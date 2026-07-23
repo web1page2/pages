@@ -4,7 +4,6 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>My Web Page</title>
-        <link rel="stylesheet" href="styles.css">
         <style>
             .sub-container {
                 display: flex;
@@ -20,6 +19,9 @@
             .sub-container a {
                 text-decoration: none;
                 color: inherit;
+                padding: 5px;
+                border-radius: 20%;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
             }
             .sub-container img {
                 width: 50px;
@@ -37,7 +39,7 @@
                 background-color: black;
                 color: #ffffff;
                 text-align: center;
-                padding: 5px 0;
+                padding: 2px 5px;
                 border-radius: 5px;
                 position: absolute;
                 top: 100%;
@@ -137,9 +139,52 @@
                         {
                             name: 'Codeforces',
                             url: 'https://codeforces.com',
-                            img: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAABuUlEQVR4Ae3Ww2KcYRTG8dxA7XZQfDPXUNvctpty2TbONraNW4ht2+Yq2sd2zvCZ88bW4j+e85v5bPbG8uOetr/gCSiLav283D/W550FAbsR0bK4UojuGHg9rDlmNZDe2z0wrIm3iyAB+wVeD240tGlwrsvu3VyXrblJHRZqDiKCXQuo3zioG74o1P5vCFAEObZJsNOmDyFspumHp/6DNBQAlggWyyQVli2XTmtA+ieIzLb8McRBERJBGpwjl0qLZNICViCT+gnWgIBsCLzqW2vSFa9qA5grV/1HCKMfAiDDGr4JICCrgzIpcCUsVy4t0r80m274OogIhiANFaEaSgARwTLkqh4NyKBVQQPAYyAgGwOnar5QOwkSBiAg2GTFSx8OXvaoErrkWhHLQQaZgitilW8EUMBcKykR5BAHEcEQpKF6gMfBlbAUhVoLTpQ9HuYQtfz6hsBLTuUCCAgEICIYB/UAxsFUhSqEQRx8UoIINl5y75cBdCoPFiDHMk30Hh5pVgMTlep0Ai/o0GEM/x110bHs+nKdBFx0KDVEr9F79Bn8l0kK9QhGhzU6zm76Mm8ZuYMd+OvSJdpOUbhFdcdPAAAAAElFTkSuQmCC',
+                            img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcStUWHK7dAHZU5a4wtW3Z0oCzzgG6FYo72E6zFWjjFaSw&s=10',
                             tooltip: 'Codeforces'
+                        },
+                        {
+                            name: 'LeetCode',
+                            url: 'https://leetcode.com',
+                            img: 'https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/leetcode.png',
+                            tooltip: 'LeetCode'
+                        },
+                        {
+                            name: 'CodeChef',
+                            url: 'https://www.codechef.com',
+                            img: 'https://cdn.brandfetch.io/idM2-b7Taf/w/400/h/400/theme/dark/icon.jpeg?c=1bxid64Mup7aczewSAYMX&t=1781713354782',
+                            tooltip: 'CodeChef'
+                        },
+                        {
+                            name: 'AtCoder',
+                            url: 'https://atcoder.jp',
+                            img: 'https://cdn.brandfetch.io/idZMTV6iO2/w/280/h/280/theme/dark/logo.png?c=1bxid64Mup7aczewSAYMX&t=1776293468505',
+                            tooltip: 'AtCoder'
+                        },
+                        {
+                            name: 'HackerRank',
+                            url: 'https://www.hackerrank.com',
+                            img: 'https://upload.wikimedia.org/wikipedia/commons/6/65/HackerRank_logo.png',
+                            tooltip: 'HackerRank'
+                        },
+                        {
+                            name: 'HackerEarth',
+                            url: 'https://www.hackerearth.com',
+                            img: 'https://cdn.brandfetch.io/idmBoPw34E/w/1000/h/1000/theme/dark/logo.png?c=1bxid64Mup7aczewSAYMX&t=1778124086430',
+                            tooltip: 'HackerEarth'
+                        },
+                        {
+                            name: 'DimikOJ',
+                            url: 'https://dimikoj.com',
+                            img: 'https://dimikoj.com/img/dimik-logo-green.svg',
+                            tooltip: 'DimikOJ'
+                        },
+                        {
+                            name: 'VJudge',
+                            url: 'https://vjudge.net',
+                            img: 'https://vjudge.net/static/bundle/11b24ab2156955d8f3fa.ico',
+                            tooltip: 'VJudge'
                         }
+
                     ]
                 }
             ];
