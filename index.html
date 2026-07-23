@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>My Web Page</title>
+        <link rel="stylesheet" href="styles.css">
+        <style>
+            .sub-container {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: left;
+                gap: 20px;
+                padding: 20px;
+            }
+            .sub-container h3 {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+            .sub-container a {
+                text-decoration: none;
+                color: inherit;
+            }
+            .sub-container img {
+                width: 50px;
+                height: 50px;
+                object-fit: contain;
+            }
+            .tooltip {
+                position: relative;
+                display: inline-block;
+                border-bottom: 1px dotted black;
+                cursor: pointer;
+            }
+            .tooltiptext {
+                visibility: hidden;
+                background-color: black;
+                color: #ffffff;
+                text-align: center;
+                padding: 5px 0;
+                border-radius: 5px;
+                position: absolute;
+                top: 100%;
+                left: 50%;
+                transform: translateX(-50%);
+                z-index: 1;
+            }
+            .tooltip:hover .tooltiptext {
+                visibility: visible;
+            }
+            .tooltiptext::after {
+                content: " ";
+                position: absolute;
+                bottom: 100%;
+                left: 50%;
+                transform: translateX(-50%);
+                border-width: 5px;
+                border-style: solid;
+                border-color: transparent transparent black transparent;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="container">
+        </div>
+
+        <script>
+            let links = [
+                {
+                    type: 'google-products',
+                    links: [
+                        {
+                            name: 'Google',
+                            url: 'https://google.com',
+                            img: 'https://cdn.brandfetch.io/id6O2oGzv-/theme/dark/symbol.svg?c=1bxid64Mup7aczewSAYMX&t=1755835725776',
+                            tooltip: 'Google'
+                        },
+                        {
+                            name: 'Drive',
+                            url: 'https://drive.google.com',
+                            img: 'https://cdn.brandfetch.io/id6O2oGzv-/theme/dark/idncaAgFGT.svg?c=1bxid64Mup7aczewSAYMX&t=1779345717348',
+                            tooltip: 'Drive'
+                        },
+                        {
+                            name: 'Gmail',
+                            url: 'https://mail.google.com',
+                            img: 'https://cdn.brandfetch.io/id6O2oGzv-/theme/dark/idBP5ltu-a.svg?c=1dxbfHSJFAPEGdCLU4o5B',
+                            tooltip: 'Gmail'
+                        },
+                        {
+                            name: 'Maps',
+                            url: 'https://maps.google.com',
+                            img: 'https://cdn.brandfetch.io/id6O2oGzv-/theme/dark/idNQ5aWWN-.svg?c=1dxbfHSJFAPEGdCLU4o5B',
+                            tooltip: 'Maps'
+                        },
+                        {
+                            name: 'Sheets',
+                            url: 'https://sheets.google.com',
+                            img: 'https://cdn.brandfetch.io/id6O2oGzv-/theme/dark/idKa2XnbFY.svg?c=1bxid64Mup7aczewSAYMX&t=1779346308528',
+                            tooltip: 'Sheets'
+                        },
+                        {
+                            name: 'Keep',
+                            url: 'https://keep.google.com',
+                            img: 'https://cdn.brandfetch.io/id6O2oGzv-/theme/dark/idN1BP3F0r.svg?c=1dxbfHSJFAPEGdCLU4o5B',
+                            tooltip: 'Keep'
+                        },
+                        {
+                            name: 'Meet',
+                            url: 'https://meet.google.com',
+                            img: 'https://cdn.brandfetch.io/id6O2oGzv-/theme/dark/ide81vGBGA.svg?c=1bxid64Mup7aczewSAYMX&t=1779346406830',
+                            tooltip: 'Meet'
+                        },
+                        {
+                            name: 'Docs',
+                            url: 'https://docs.google.com',
+                            img: 'https://cdn.brandfetch.io/id6O2oGzv-/theme/dark/id9yxSb4R3.svg?c=1dxbfHSJFAPEGdCLU4o5B',
+                            tooltip: 'Docs'
+                        },
+                        {
+                            name: 'Slides',
+                            url: 'https://docs.google.com',
+                            img: 'https://cdn.brandfetch.io/id6O2oGzv-/theme/dark/idY7x55JLN.svg?c=1dxbfHSJFAPEGdCLU4o5B',
+                            tooltip: 'Slides'
+                        },
+                        {
+                            name: 'Sites',
+                            url: 'https://sites.google.com',
+                            img: 'https://cdn.brandfetch.io/id6O2oGzv-/theme/dark/idyl3sj1bF.svg?c=1dxbfHSJFAPEGdCLU4o5B',
+                            tooltip: 'Sites'
+                        }
+                    ]
+                },
+                {
+                    type: 'programming-problems',
+                    links: [
+                        {
+                            name: 'Codeforces',
+                            url: 'https://codeforces.com',
+                            img: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAABuUlEQVR4Ae3Ww2KcYRTG8dxA7XZQfDPXUNvctpty2TbONraNW4ht2+Yq2sd2zvCZ88bW4j+e85v5bPbG8uOetr/gCSiLav283D/W550FAbsR0bK4UojuGHg9rDlmNZDe2z0wrIm3iyAB+wVeD240tGlwrsvu3VyXrblJHRZqDiKCXQuo3zioG74o1P5vCFAEObZJsNOmDyFspumHp/6DNBQAlggWyyQVli2XTmtA+ieIzLb8McRBERJBGpwjl0qLZNICViCT+gnWgIBsCLzqW2vSFa9qA5grV/1HCKMfAiDDGr4JICCrgzIpcCUsVy4t0r80m274OogIhiANFaEaSgARwTLkqh4NyKBVQQPAYyAgGwOnar5QOwkSBiAg2GTFSx8OXvaoErrkWhHLQQaZgitilW8EUMBcKykR5BAHEcEQpKF6gMfBlbAUhVoLTpQ9HuYQtfz6hsBLTuUCCAgEICIYB/UAxsFUhSqEQRx8UoIINl5y75cBdCoPFiDHMk30Hh5pVgMTlep0Ai/o0GEM/x110bHs+nKdBFx0KDVEr9F79Bn8l0kK9QhGhzU6zm76Mm8ZuYMd+OvSJdpOUbhFdcdPAAAAAElFTkSuQmCC',
+                            tooltip: 'Codeforces'
+                        }
+                    ]
+                }
+            ];
+
+            let container = document.getElementById('container');
+            links.forEach(category => {
+                let subContainer = document.createElement('div');
+                subContainer.classList.add('sub-container');
+                subContainer.innerHTML = `<h3>${category.type.replace(/-/g, ' ')}</h3>`;
+
+                category.links.forEach(link => {
+                    let linkElement = document.createElement('a');
+                    linkElement.classList.add('tooltip');
+                    linkElement.href = link.url;
+                    linkElement.target = '_blank';
+                    linkElement.innerHTML = `
+                        <div class="tooltip">
+                            <img src="${link.img}" alt="${link.name}">
+                            <span class="tooltiptext">${link.tooltip}</span>
+                        </div>
+                    `;
+                    subContainer.appendChild(linkElement);
+                });
+
+                container.appendChild(subContainer);
+            });
+
+        </script>
+    </body>
+</html>
