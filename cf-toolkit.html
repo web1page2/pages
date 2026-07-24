@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Codeforces Problems Viewer</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+            --accent-color: #38bdf8;
+            --accent-hover: #0ea5e9;
+            --tag-bg: #090d16;
+            --success-color: #22c55e;
+            --danger-color: #f87171;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            color: var(--text-color);
+        }
+
+        .controls {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        input, select {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            outline: none;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--accent-color);
+        }
+
+        #searchBox {
+            width: 250px;
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .table-container {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow-x: auto;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.95rem;
+        }
+
+        th, td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: rgba(15, 23, 42, 0.5);
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background-color: rgba(56, 189, 248, 0.05);
+        }
+
+        .problem-link {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .problem-link:hover {
+            text-decoration: underline;
+            color: var(--accent-hover);
+        }
+
+        .tags-container {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            background-color: var(--tag-bg);
+            color: var(--text-muted);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .solved-tag {
+            background-color: rgba(34, 197, 94, 0.15);
+            color: var(--success-color);
+            border-color: rgba(34, 197, 94, 0.3);
+        }
+
+        .unsolved-tag {
+            background-color: rgba(248, 113, 113, 0.15);
+            color: var(--danger-color);
+            border-color: rgba(248, 113, 113, 0.3);
+        }
+
+        .browse-btn {
+            background-color: var(--card-bg);
+            border: 1px solid var(--accent-color);
+            color: var(--accent-color);
+            padding: 4px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+        }
+
+        .browse-btn:hover {
+            background-color: var(--accent-color);
+            color: var(--bg-color);
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .pagination-top {
+            margin-bottom: 16px;
+        }
+
+        .pagination-bottom {
+            margin-top: 20px;
+        }
+
+        .pagination button {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.2s;
+        }
+
+        .pagination button:hover:not(:disabled) {
+            background-color: rgba(56, 189, 248, 0.1);
+            border-color: var(--accent-color);
+        }
+
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pagination span {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            padding: 0 4px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .pagination input {
+            width: 60px;
+            text-align: center;
+            padding: 5px 8px;
+            font-size: 0.9rem;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            border-radius: 6px;
+        }
+
+        .pagination input:focus {
+            border-color: var(--accent-color);
+            outline: none;
+        }
+
+        .loading, .error {
+            text-align: center;
+            padding: 40px;
+            font-size: 1.1rem;
+            color: var(--text-muted);
+        }
+
+        .error {
+            color: #f87171;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Codeforces Problem Set</h1>
+        <div class="controls">
+            <input type="text" id="searchBox" placeholder="Search by name, tag, or ID..." onkeyup="handleSearch()">
+            <select id="filterStatus" onchange="handleFilterChange()">
+                <option value="all">All Problems</option>
+                <option value="notSolved">Both Not Solved</option>
+                <option value="cppNotSolved">C++ Not Solved</option>
+                <option value="pythonNotSolved">Python Not Solved</option>
+            </select>
+            <select id="sortBy" onchange="handleSort()">
+                <option value="customSeq">Sort as 1A, 2A, ...</option>
+                <option value="default">Default Order</option>
+                <option value="solvedDesc">Most Solved</option>
+                <option value="solvedAsc">Least Solved</option>
+                <option value="ratingDesc">Highest Rating</option>
+                <option value="ratingAsc">Lowest Rating</option>
+            </select>
+        </div>
+    </header>
+
+    <div class="stats-bar">
+        <div id="statsCount">Loading problems and user submissions...</div>
+        <div id="pageIndicator">Page 1 of 1</div>
+    </div>
+
+    <!-- Top Pagination -->
+    <div class="pagination pagination-top" id="paginationTopContainer"></div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 120px;">ID</th>
+                    <th>Problem Name</th>
+                    <th style="width: 100px;">Rating</th>
+                    <th style="width: 100px;">Solved</th>
+                    <th style="width: 90px;">C++</th>
+                    <th style="width: 90px;">Python</th>
+                    <th style="width: 90px;">Browse</th>
+                    <th>Tags</th>
+                </tr>
+            </thead>
+            <tbody id="problemTableBody">
+                <tr>
+                    <td colspan="8" class="loading">Fetching data from Codeforces API...</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Bottom Pagination -->
+    <div class="pagination pagination-bottom" id="paginationBottomContainer"></div>
+</div>
+
+<script>
+    let allProblems = [];
+    let problemStats = {};
+    let userSolvedStatus = {}; 
+    let filteredProblems = [];
+    let currentPage = 1;
+    const pageSize = 100;
+    const targetHandle = "md_kashem_molla";
+
+    function parseProblemIndex(indexStr) {
+        const match = indexStr.match(/^(\d*)([A-Za-z]+)$/);
+        if (!match) return { num: 0, text: indexStr };
+        return {
+            num: match[1] ? parseInt(match[1], 10) : 0,
+            text: match[2].toUpperCase()
+        };
+    }
+
+    async function fetchCodeforcesData() {
+        try {
+            const [problemsRes, subsRes] = await Promise.all([
+                fetch('https://codeforces.com/api/problemset.problems'),
+                fetch(`https://codeforces.com/api/user.status?handle=${targetHandle}`)
+            ]);
+
+            const problemsData = await problemsRes.json();
+            const subsData = await subsRes.json();
+            
+            if (problemsData.status !== 'OK') {
+                throw new Error('Failed to fetch from Codeforces API');
+            }
+
+            allProblems = problemsData.result.problems;
+            const statistics = problemsData.result.problemStatistics;
+
+            statistics.forEach(stat => {
+                const key = `${stat.contestId}-${stat.index}`;
+                problemStats[key] = stat.solvedCount;
+            });
+
+            if (subsData.status === 'OK') {
+                subsData.result.forEach(sub => {
+                    if (sub.verdict === 'OK' && sub.problem && sub.problem.contestId) {
+                        const key = `${sub.problem.contestId}-${sub.problem.index}`;
+                        if (!userSolvedStatus[key]) {
+                            userSolvedStatus[key] = { cpp: false, python: false };
+                        }
+                        const lang = sub.programmingLanguage.toLowerCase();
+                        if (lang.includes('g++') || lang.includes('c++') || lang.includes('gcc')) {
+                            userSolvedStatus[key].cpp = true;
+                        }
+                        if (lang.includes('python') || lang.includes('pypy')) {
+                            userSolvedStatus[key].python = true;
+                        }
+                    }
+                });
+            }
+
+            applyFilterAndSort();
+        } catch (error) {
+            document.getElementById('problemTableBody').innerHTML = `
+                <tr><td colspan="8" class="error">Failed to load data. Please check your network connection. (${error.message})</td></tr>
+            `;
+            document.getElementById('statsCount').innerText = '';
+        }
+    }
+
+    function applyFilterAndSort() {
+        const searchVal = document.getElementById('searchBox').value.toLowerCase();
+        const filterStatus = document.getElementById('filterStatus').value;
+        const sortVal = document.getElementById('sortBy').value;
+
+        // Filter
+        filteredProblems = allProblems.filter(p => {
+            const idStr = `${p.contestId}${p.index}`.toLowerCase();
+            const nameStr = p.name.toLowerCase();
+            const tagsStr = p.tags ? p.tags.join(' ').toLowerCase() : '';
+            const matchesSearch = idStr.includes(searchVal) || nameStr.includes(searchVal) || tagsStr.includes(searchVal);
+            
+            if (!matchesSearch) return false;
+
+            const probKey = `${p.contestId}-${p.index}`;
+            const userSub = userSolvedStatus[probKey] || { cpp: false, python: false };
+
+            if (filterStatus === 'notSolved') {
+                return !userSub.cpp && !userSub.python;
+            } else if (filterStatus === 'cppNotSolved') {
+                return !userSub.cpp;
+            } else if (filterStatus === 'pythonNotSolved') {
+                return !userSub.python;
+            }
+
+            return true;
+        });
+
+        // Sort + Push Labyrinth (contestId 921) to the very end
+        filteredProblems.sort((a, b) => {
+            const isLabyrinthA = (a.contestId === 921) ? 1 : 0;
+            const isLabyrinthB = (b.contestId === 921) ? 1 : 0;
+
+            if (isLabyrinthA !== isLabyrinthB) {
+                return isLabyrinthA - isLabyrinthB;
+            }
+
+            const keyA = `${a.contestId}-${a.index}`;
+            const keyB = `${b.contestId}-${b.index}`;
+            const solvedA = problemStats[keyA] || 0;
+            const solvedB = problemStats[keyB] || 0;
+            const ratingA = a.rating || 0;
+            const ratingB = b.rating || 0;
+
+            if (sortVal === 'solvedDesc') return solvedB - solvedA;
+            if (sortVal === 'solvedAsc') return solvedA - solvedB;
+            if (sortVal === 'ratingDesc') return ratingB - ratingA;
+            if (sortVal === 'ratingAsc') return ratingA - ratingB;
+            
+            if (sortVal === 'customSeq') {
+                const idxA = parseProblemIndex(a.index);
+                const idxB = parseProblemIndex(b.index);
+
+                if (idxA.text !== idxB.text) {
+                    return idxA.text.localeCompare(idxB.text);
+                }
+                if (idxA.num !== idxB.num) {
+                    return idxA.num - idxB.num;
+                }
+                return a.contestId - b.contestId;
+            }
+
+            return 0; // Default order
+        });
+
+        currentPage = 1; 
+        renderPage();
+    }
+
+    function renderPage() {
+        const tbody = document.getElementById('problemTableBody');
+        const totalPages = Math.ceil(filteredProblems.length / pageSize) || 1;
+
+        if (currentPage > totalPages) currentPage = totalPages;
+        if (currentPage < 1) currentPage = 1;
+
+        const startIndex = (currentPage - 1) * pageSize;
+        const endIndex = Math.min(startIndex + pageSize, filteredProblems.length);
+        const pageItems = filteredProblems.slice(startIndex, endIndex);
+
+        document.getElementById('statsCount').innerText = `Showing ${filteredProblems.length > 0 ? startIndex + 1 : 0}-${endIndex} of ${filteredProblems.length} problems (Submissions loaded for ${targetHandle})`;
+        document.getElementById('pageIndicator').innerText = `Page ${currentPage} of ${totalPages}`;
+
+        if (pageItems.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="8" class="loading">No matching problems found.</td></tr>`;
+            renderPagination(0);
+            return;
+        }
+
+        let html = '';
+        pageItems.forEach((p) => {
+            const problemId = `${p.contestId}${p.index}`;
+            const problemUrl = `https://codeforces.com/problemset/problem/${p.contestId}/${p.index}`;
+            const solvedCount = problemStats[`${p.contestId}-${p.index}`] ?? 'N/A';
+            const rating = p.rating ?? '-';
+            
+            const probKey = `${p.contestId}-${p.index}`;
+            const userSub = userSolvedStatus[probKey] || { cpp: false, python: false };
+
+            const cppHtml = userSub.cpp 
+                ? '<span class="tag solved-tag">solved</span>' 
+                : '<span class="tag unsolved-tag">unsolved</span>';
+            const pythonHtml = userSub.python 
+                ? '<span class="tag solved-tag">solved</span>' 
+                : '<span class="tag unsolved-tag">unsolved</span>';
+
+            const tagsHtml = p.tags ? p.tags.map(t => `<span class="tag">${t}</span>`).join('') : '';
+
+            html += `
+                <tr>
+                    <td><a href="${problemUrl}" target="_blank" class="problem-link">${problemId}</a></td>
+                    <td><a href="${problemUrl}" target="_blank" class="problem-link">${p.name}</a></td>
+                    <td>${rating}</td>
+                    <td>${solvedCount}</td>
+                    <td>${cppHtml}</td>
+                    <td>${pythonHtml}</td>
+                    <td><button class="browse-btn" onclick="openBrowseWindow('${p.contestId}', '${p.index}')">Browse</button></td>
+                    <td><div class="tags-container">${tagsHtml}</div></td>
+                </tr>
+            `;
+        });
+
+        tbody.innerHTML = html;
+        renderPagination(totalPages);
+    }
+
+    function openBrowseWindow(contestId, index) {
+        const userInput = prompt("Enter number of problems to open (n):", "10");
+        if (userInput === null) return; // Cancelled
+
+        const n = parseInt(userInput, 10);
+        if (isNaN(n) || n <= 0) {
+            alert("Please enter a valid positive number.");
+            return;
+        }
+
+        // Find the index of the current problem within the *currently filtered and sorted* list
+        const currentIndex = filteredProblems.findIndex(p => p.contestId == contestId && p.index === index);
+        if (currentIndex === -1) {
+            alert("Problem not found in the current view list.");
+            return;
+        }
+
+        // Get up to n problems starting from the current problem
+        const targetProblems = filteredProblems.slice(currentIndex, currentIndex + n);
+        
+        if (targetProblems.length < n) {
+            alert(`Note: Only ${targetProblems.length} problems available from this point onward in the current view.`);
+        }
+
+        // Open each link in a new tab
+        targetProblems.forEach(p => {
+            const url = `https://codeforces.com/problemset/problem/${p.contestId}/${p.index}`;
+            window.open(url, '_blank');
+        });
+    }
+
+    function renderPagination(totalPages) {
+        const topContainer = document.getElementById('paginationTopContainer');
+        const bottomContainer = document.getElementById('paginationBottomContainer');
+
+        if (totalPages <= 1) {
+            topContainer.innerHTML = '';
+            bottomContainer.innerHTML = '';
+            return;
+        }
+
+        const paginationHtml = `
+            <button onclick="changePage(1)" ${currentPage === 1 ? 'disabled' : ''}>&laquo; First</button>
+            <button onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>&lsaquo; Prev</button>
+            <span>
+                Page 
+                <input type="number" class="pageInputBox" min="1" max="${totalPages}" value="${currentPage}" oninput="handlePageInput(this, ${totalPages})"> 
+                / ${totalPages}
+            </span>
+            <button onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>Next &rsaquo;</button>
+            <button onclick="changePage(${totalPages})" ${currentPage === totalPages ? 'disabled' : ''}>Last &raquo;</button>
+        `;
+
+        topContainer.innerHTML = paginationHtml;
+        bottomContainer.innerHTML = paginationHtml;
+    }
+
+    function handlePageInput(inputElem, totalPages) {
+        let page = parseInt(inputElem.value, 10);
+        if (isNaN(page)) return;
+        if (page < 1) page = 1;
+        if (page > totalPages) page = totalPages;
+        
+        document.querySelectorAll('.pageInputBox').forEach(box => {
+            if (box !== inputElem && box.value != page) {
+                box.value = page;
+            }
+        });
+
+        if (page !== currentPage) {
+            currentPage = page;
+            renderPage();
+        }
+    }
+
+    function changePage(page) {
+        currentPage = page;
+        renderPage();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function handleSearch() {
+        applyFilterAndSort();
+    }
+
+    function handleFilterChange() {
+        applyFilterAndSort();
+    }
+
+    function handleSort() {
+        applyFilterAndSort();
+    }
+
+    window.onload = fetchCodeforcesData;
+</script>
+
+</body>
+</html>
