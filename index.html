@@ -7,7 +7,8 @@
         <style>
             body {
                 font-family: Arial, sans-serif;
-                background-color: #f0f0f0;
+                background-color: #121212;
+                color: #e0e0e0;
                 margin: 0;
                 padding: 0;
             }
@@ -15,58 +16,105 @@
                 display: flex;
                 flex-wrap: wrap;
                 justify-content: center;
-                gap: 1%;
-                box-sizing: border-box;
+                gap: 15px;
                 padding: 20px;
             }
             .sub-container {
                 display: flex;
                 flex-wrap: wrap;
-                justify-content: center;
-                gap: 20px;
+                align-content: flex-start;
+                gap: 12px;
                 padding: 20px;
-                border: 1px solid #ccc;
+                border: 1px solid #333333;
                 border-radius: 10px;
                 width: 24%;
+                min-width: 250px;
                 box-sizing: border-box;
+                background-color: #1e1e1e;
+                max-height: 75px; /* Height restricted to only see h3 and padding */
+                overflow: hidden;
+                transition: max-height 0.4s ease;
+            }
+            .sub-container.expanded {
+                max-height: 1000px; /* Large enough to fit expanded content */
+            }
+            .header-wrapper {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                width: 100%;
+                margin-bottom: 0;
             }
             .sub-container h3 {
+                margin: 0;
+                font-size: 1.2rem;
+                color: #ffffff;
+            }
+            .toggle-btn {
+                background: #2a2a2a;
+                color: #ffffff;
+                border: 1px solid #444;
+                border-radius: 50%;
+                width: 28px;
+                height: 28px;
+                cursor: pointer;
+                font-size: 1rem;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                transition: transform 0.3s ease, background 0.2s ease;
+            }
+            .toggle-btn:hover {
+                background: #3a3a3a;
+            }
+            .sub-container.expanded .toggle-btn {
+                transform: rotate(45deg);
+            }
+            .sub-container hr {
                 width: 100%;
-                margin-bottom: 10px;
+                border: none;
+                border-top: 1px solid #333333;
+                margin: 12px 0 4px 0;
             }
             .sub-container a {
+                display: flex;
+                justify-content: center;
+                align-items: center;
                 text-decoration: none;
                 color: inherit;
-                padding: 5px;
-                border-radius: 20%;
-                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+                width: 50px;
+                height: 50px;
+                background: #2a2a2a;
+                border-radius: 12px;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+                position: relative;
+                box-sizing: border-box;
             }
             .sub-container img {
-                width: 35px;
-                height: 35px;
+                width: 30px;
+                height: 30px;
                 object-fit: contain;
-            }
-            .tooltip {
-                position: relative;
-                display: inline-block;
-                border-bottom: 1px dotted black;
-                cursor: pointer;
             }
             .tooltiptext {
                 visibility: hidden;
-                background-color: black;
-                color: #ffffff;
+                background-color: #f1f1f1;
+                color: #000000;
                 text-align: center;
-                padding: 2px 5px;
+                padding: 4px 8px;
                 border-radius: 5px;
                 position: absolute;
-                top: 100%;
+                top: 110%;
                 left: 50%;
                 transform: translateX(-50%);
                 z-index: 1;
+                font-size: 0.8rem;
+                white-space: nowrap;
+                opacity: 0;
+                transition: opacity 0.2s ease;
             }
-            .tooltip:hover .tooltiptext {
+            .sub-container a:hover .tooltiptext {
                 visibility: visible;
+                opacity: 1;
             }
             .tooltiptext::after {
                 content: " ";
@@ -76,250 +124,83 @@
                 transform: translateX(-50%);
                 border-width: 5px;
                 border-style: solid;
-                border-color: transparent transparent black transparent;
+                border-color: transparent transparent #f1f1f1 transparent;
             }
         </style>
     </head>
     <body>
-        <div id="container">
-        </div>
+        <div id="container"></div>
 
         <script>
             let links = [
                 {
                     type: 'google-products',
                     links: [
-                        {
-                            name: 'Google',
-                            url: 'https://google.com',
-                            img: 'https://cdn.brandfetch.io/id6O2oGzv-/theme/dark/symbol.svg?c=1bxid64Mup7aczewSAYMX&t=1755835725776',
-                            tooltip: 'Google'
-                        },
-                        {
-                            name: 'Drive',
-                            url: 'https://drive.google.com',
-                            img: 'https://cdn.brandfetch.io/id6O2oGzv-/theme/dark/idncaAgFGT.svg?c=1bxid64Mup7aczewSAYMX&t=1779345717348',
-                            tooltip: 'Drive'
-                        },
-                        {
-                            name: 'Gmail',
-                            url: 'https://mail.google.com',
-                            img: 'https://cdn.brandfetch.io/id6O2oGzv-/theme/dark/idBP5ltu-a.svg?c=1dxbfHSJFAPEGdCLU4o5B',
-                            tooltip: 'Gmail'
-                        },
-                        {
-                            name: 'Maps',
-                            url: 'https://maps.google.com',
-                            img: 'https://cdn.brandfetch.io/id6O2oGzv-/theme/dark/idNQ5aWWN-.svg?c=1dxbfHSJFAPEGdCLU4o5B',
-                            tooltip: 'Maps'
-                        },
-                        {
-                            name: 'Sheets',
-                            url: 'https://sheets.google.com',
-                            img: 'https://cdn.brandfetch.io/id6O2oGzv-/theme/dark/idKa2XnbFY.svg?c=1bxid64Mup7aczewSAYMX&t=1779346308528',
-                            tooltip: 'Sheets'
-                        },
-                        {
-                            name: 'Keep',
-                            url: 'https://keep.google.com',
-                            img: 'https://cdn.brandfetch.io/id6O2oGzv-/theme/dark/idN1BP3F0r.svg?c=1dxbfHSJFAPEGdCLU4o5B',
-                            tooltip: 'Keep'
-                        },
-                        {
-                            name: 'Meet',
-                            url: 'https://meet.google.com',
-                            img: 'https://cdn.brandfetch.io/id6O2oGzv-/theme/dark/ide81vGBGA.svg?c=1bxid64Mup7aczewSAYMX&t=1779346406830',
-                            tooltip: 'Meet'
-                        },
-                        {
-                            name: 'Docs',
-                            url: 'https://docs.google.com',
-                            img: 'https://cdn.brandfetch.io/id6O2oGzv-/theme/dark/id9yxSb4R3.svg?c=1dxbfHSJFAPEGdCLU4o5B',
-                            tooltip: 'Docs'
-                        },
-                        {
-                            name: 'Slides',
-                            url: 'https://docs.google.com',
-                            img: 'https://cdn.brandfetch.io/id6O2oGzv-/theme/dark/idY7x55JLN.svg?c=1dxbfHSJFAPEGdCLU4o5B',
-                            tooltip: 'Slides'
-                        },
-                        {
-                            name: 'Sites',
-                            url: 'https://sites.google.com',
-                            img: 'https://cdn.brandfetch.io/id6O2oGzv-/theme/dark/idyl3sj1bF.svg?c=1dxbfHSJFAPEGdCLU4o5B',
-                            tooltip: 'Sites'
-                        }
+                        { name: 'Google', url: 'https://google.com', img: 'https://cdn.brandfetch.io/id6O2oGzv-/theme/dark/symbol.svg?c=1bxid64Mup7aczewSAYMX&t=1755835725776', tooltip: 'Google' },
+                        { name: 'Drive', url: 'https://drive.google.com', img: 'https://cdn.brandfetch.io/id6O2oGzv-/theme/dark/idncaAgFGT.svg?c=1bxid64Mup7aczewSAYMX&t=1779345717348', tooltip: 'Drive' },
+                        { name: 'Gmail', url: 'https://mail.google.com', img: 'https://cdn.brandfetch.io/id6O2oGzv-/theme/dark/idBP5ltu-a.svg?c=1dxbfHSJFAPEGdCLU4o5B', tooltip: 'Gmail' },
+                        { name: 'Maps', url: 'https://maps.google.com', img: 'https://cdn.brandfetch.io/id6O2oGzv-/theme/dark/idNQ5aWWN-.svg?c=1dxbfHSJFAPEGdCLU4o5B', tooltip: 'Maps' },
+                        { name: 'Sheets', url: 'https://sheets.google.com', img: 'https://cdn.brandfetch.io/id6O2oGzv-/theme/dark/idKa2XnbFY.svg?c=1bxid64Mup7aczewSAYMX&t=1779346308528', tooltip: 'Sheets' },
+                        { name: 'Keep', url: 'https://keep.google.com', img: 'https://cdn.brandfetch.io/id6O2oGzv-/theme/dark/idN1BP3F0r.svg?c=1dxbfHSJFAPEGdCLU4o5B', tooltip: 'Keep' },
+                        { name: 'Meet', url: 'https://meet.google.com', img: 'https://cdn.brandfetch.io/id6O2oGzv-/theme/dark/ide81vGBGA.svg?c=1bxid64Mup7aczewSAYMX&t=1779346406830', tooltip: 'Meet' },
+                        { name: 'Docs', url: 'https://docs.google.com', img: 'https://cdn.brandfetch.io/id6O2oGzv-/theme/dark/id9yxSb4R3.svg?c=1dxbfHSJFAPEGdCLU4o5B', tooltip: 'Docs' },
+                        { name: 'Messages', url: 'https://messages.google.com', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Google_Messages_logo.svg/3840px-Google_Messages_logo.svg.png', tooltip: 'Messages' },
+                        { name: 'Tasks', url: 'https://tasks.google.com', img: 'https://www.gstatic.com/images/branding/productlogos/tasks_2026/v2/web/192px.svg', tooltip: 'Tasks' },
+                        { name: 'NotebookLM', url: 'https://notebooklm.google.com', img: 'https://raw.githubusercontent.com/lobehub/lobe-icons/refs/heads/master/packages/static-png/light/notebooklm.png', tooltip: 'NotebookLM' },
+                        { name: 'Chrome Web Store', url: 'https://chromewebstore.google.com', img: 'https://fonts.gstatic.com/s/i/productlogos/chrome_store/v7/192px.svg', tooltip: 'Chrome Web Store' },
+                        { name: 'Contacts', url: 'https://contacts.google.com', img: 'https://www.gstatic.com/images/branding/product/2x/contacts_2022_48dp.png', tooltip: 'Contacts' },
+                        { name: 'Chat', url: 'https://chat.google.com', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2d/Google_Chat_Logo_05.2026.svg/500px-Google_Chat_Logo_05.2026.svg.png?_=20260520145834', tooltip: 'Chat' },
+                        { name: 'Google One', url: 'https://one.google.com', img: 'https://www.gstatic.com/subscriptions/img/google_one_fab_faf6260938ad09b3929c0dfd0983e408.svg', tooltip: 'Google One' },
+                        { name: 'Calendar', url: 'https://calendar.google.com', img: 'https://www.gstatic.com/images/branding/productlogos/calendar_2026_24/v2/png/calendar_2026_24_96dp.png', tooltip: 'Calendar' },
+                        { name: 'Translate', url: 'https://translate.google.com', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Google_Translate_logo.svg/1280px-Google_Translate_logo.svg.png?_=20210606111727', tooltip: 'Translate' },
+                        { name: 'Photos', url: 'https://photos.google.com', img: 'https://img.icons8.com/?size=96&id=30843&format=png', tooltip: 'Photos' },
+                        { name: 'Slides', url: 'https://docs.google.com', img: 'https://cdn.brandfetch.io/id6O2oGzv-/theme/dark/idY7x55JLN.svg?c=1dxbfHSJFAPEGdCLU4o5B', tooltip: 'Slides' },
+                        { name: 'Sites', url: 'https://sites.google.com', img: 'https://cdn.brandfetch.io/id6O2oGzv-/theme/dark/idyl3sj1bF.svg?c=1dxbfHSJFAPEGdCLU4o5B', tooltip: 'Sites' }
                     ]
                 },
                 {
                     type: 'programming-problems',
                     links: [
-                        {
-                            name: 'Codeforces',
-                            url: 'https://codeforces.com',
-                            img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcStUWHK7dAHZU5a4wtW3Z0oCzzgG6FYo72E6zFWjjFaSw&s=10',
-                            tooltip: 'Codeforces'
-                        },
-                        {
-                            name: 'LeetCode',
-                            url: 'https://leetcode.com',
-                            img: 'https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/leetcode.png',
-                            tooltip: 'LeetCode'
-                        },
-                        {
-                            name: 'CodeChef',
-                            url: 'https://www.codechef.com',
-                            img: 'https://cdn.brandfetch.io/idM2-b7Taf/w/400/h/400/theme/dark/icon.jpeg?c=1bxid64Mup7aczewSAYMX&t=1781713354782',
-                            tooltip: 'CodeChef'
-                        },
-                        {
-                            name: 'AtCoder',
-                            url: 'https://atcoder.jp',
-                            img: 'https://cdn.brandfetch.io/idZMTV6iO2/w/280/h/280/theme/dark/logo.png?c=1bxid64Mup7aczewSAYMX&t=1776293468505',
-                            tooltip: 'AtCoder'
-                        },
-                        {
-                            name: 'HackerRank',
-                            url: 'https://www.hackerrank.com',
-                            img: 'https://upload.wikimedia.org/wikipedia/commons/6/65/HackerRank_logo.png',
-                            tooltip: 'HackerRank'
-                        },
-                        {
-                            name: 'HackerEarth',
-                            url: 'https://www.hackerearth.com',
-                            img: 'https://cdn.brandfetch.io/idmBoPw34E/w/1000/h/1000/theme/dark/logo.png?c=1bxid64Mup7aczewSAYMX&t=1778124086430',
-                            tooltip: 'HackerEarth'
-                        },
-                        {
-                            name: 'DimikOJ',
-                            url: 'https://dimikoj.com',
-                            img: 'https://dimikoj.com/img/dimik-logo-green.svg',
-                            tooltip: 'DimikOJ'
-                        },
-                        {
-                            name: 'VJudge',
-                            url: 'https://vjudge.net',
-                            img: 'https://vjudge.net/static/bundle/11b24ab2156955d8f3fa.ico',
-                            tooltip: 'VJudge'
-                        }
+                        { name: 'Codeforces', url: 'https://codeforces.com', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcStUWHK7dAHZU5a4wtW3Z0oCzzgG6FYo72E6zFWjjFaSw&s=10', tooltip: 'Codeforces' },
+                        { name: 'LeetCode', url: 'https://leetcode.com', img: 'https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/leetcode.png', tooltip: 'LeetCode' },
+                        { name: 'CodeChef', url: 'https://www.codechef.com', img: 'https://cdn.brandfetch.io/idM2-b7Taf/w/400/h/400/theme/dark/icon.jpeg?c=1bxid64Mup7aczewSAYMX&t=1781713354782', tooltip: 'CodeChef' },
+                        { name: 'AtCoder', url: 'https://atcoder.jp', img: 'https://cdn.brandfetch.io/idZMTV6iO2/w/280/h/280/theme/dark/logo.png?c=1bxid64Mup7aczewSAYMX&t=1776293468505', tooltip: 'AtCoder' },
+                        { name: 'HackerRank', url: 'https://www.hackerrank.com', img: 'https://upload.wikimedia.org/wikipedia/commons/6/65/HackerRank_logo.png', tooltip: 'HackerRank' },
+                        { name: 'HackerEarth', url: 'https://www.hackerearth.com', img: 'https://cdn.brandfetch.io/idmBoPw34E/w/1000/h/1000/theme/dark/logo.png?c=1bxid64Mup7aczewSAYMX&t=1778124086430', tooltip: 'HackerEarth' },
+                        { name: 'DimikOJ', url: 'https://dimikoj.com', img: 'https://dimikoj.com/img/dimik-logo-green.svg', tooltip: 'DimikOJ' },
+                        { name: 'VJudge', url: 'https://vjudge.net', img: 'https://vjudge.net/static/bundle/11b24ab2156955d8f3fa.ico', tooltip: 'VJudge' }
                     ]
                 },
                 {
                     type: 'social-media',
                     links: [
-                        {
-                            name: 'Facebook',
-                            url: 'https://facebook.com',
-                            img: 'https://cdn.brandfetch.io/idpKX136kp/w/2084/h/2084/theme/dark/logo.png?c=1bxid64Mup7aczewSAYMX&t=1758525490502',
-                            tooltip: 'Facebook'
-                        },
-                        {
-                            name: 'Messenger',
-                            url: 'https://messenger.com',
-                            img: 'https://cdn.brandfetch.io/idcZxK_wH8/w/80/h/80/theme/light/logo.png?c=1bxid64Mup7aczewSAYMX&t=1738207165733',
-                            tooltip: 'Messenger'
-                        },
-                        {
-                            name: 'WhatsApp',
-                            url: 'https://whatsapp.com',
-                            img: 'https://cdn.brandfetch.io/id6Zq084G_/theme/dark/id07h05Ur1.svg?c=1dxbfHSJFAPEGdCLU4o5B',
-                            tooltip: 'WhatsApp'
-                        },
-                        {
-                            name: 'Telegram',
-                            url: 'https://telegram.org',
-                            img: 'https://cdn.brandfetch.io/id68S6e-Gp/theme/dark/symbol.svg?c=1dxbfHSJFAPEGdCLU4o5B',
-                            tooltip: 'Telegram'
-                        },
-                        {
-                            name: 'Twitter',
-                            url: 'https://twitter.com',
-                            img: 'https://cdn.brandfetch.io/idS5WhqBbM/theme/dark/logo.svg?c=1bxid64Mup7aczewSAYMX&t=1692089092800',
-                            tooltip: 'Twitter'
-                        },
-                        {
-                            name: 'Instagram',
-                            url: 'https://instagram.com',
-                            img: 'https://cdn.brandfetch.io/ido5G85nya/w/1000/h/1000/theme/dark/icon.jpeg?c=1bxid64Mup7aczewSAYMX&t=1724650629825',
-                            tooltip: 'Instagram'
-                        },
-                        {
-                            name: 'LinkedIn',
-                            url: 'https://linkedin.com',
-                            img: 'https://cdn.brandfetch.io/idJFz6sAsl/w/400/h/400/theme/dark/icon.png?c=1dxbfHSJFAPEGdCLU4o5B',
-                            tooltip: 'LinkedIn'
-                        },
-                        {
-                            name: 'YouTube',
-                            url: 'https://youtube.com',
-                            img: 'https://cdn.brandfetch.io/idVfYwcuQz/theme/dark/symbol.svg?c=1dxbfHSJFAPEGdCLU4o5B',
-                            tooltip: 'YouTube'
-                        },
-                        {
-                            name: 'Reddit',
-                            url: 'https://reddit.com',
-                            img: 'https://redditinc.com/hubfs/Reddit%20Inc/Content/Brand%20Page/Reddit_Lockup_Logo.svg',
-                            tooltip: 'Reddit'
-                        }
+                        { name: 'Facebook', url: 'https://facebook.com', img: 'https://cdn.brandfetch.io/idpKX136kp/w/2084/h/2084/theme/dark/logo.png?c=1bxid64Mup7aczewSAYMX&t=1758525490502', tooltip: 'Facebook' },
+                        { name: 'Messenger', url: 'https://messenger.com', img: 'https://cdn.brandfetch.io/idcZxK_wH8/w/80/h/80/theme/light/logo.png?c=1bxid64Mup7aczewSAYMX&t=1738207165733', tooltip: 'Messenger' },
+                        { name: 'WhatsApp', url: 'https://whatsapp.com', img: 'https://cdn.brandfetch.io/id6Zq084G_/theme/dark/id07h05Ur1.svg?c=1dxbfHSJFAPEGdCLU4o5B', tooltip: 'WhatsApp' },
+                        { name: 'Telegram', url: 'https://telegram.org', img: 'https://cdn.brandfetch.io/id68S6e-Gp/theme/dark/symbol.svg?c=1dxbfHSJFAPEGdCLU4o5B', tooltip: 'Telegram' },
+                        { name: 'Twitter', url: 'https://twitter.com', img: 'https://cdn.brandfetch.io/idS5WhqBbM/theme/dark/logo.svg?c=1bxid64Mup7aczewSAYMX&t=1692089092800', tooltip: 'Twitter' },
+                        { name: 'Instagram', url: 'https://instagram.com', img: 'https://cdn.brandfetch.io/ido5G85nya/w/1000/h/1000/theme/dark/icon.jpeg?c=1bxid64Mup7aczewSAYMX&t=1724650629825', tooltip: 'Instagram' },
+                        { name: 'LinkedIn', url: 'https://linkedin.com', img: 'https://cdn.brandfetch.io/idJFz6sAsl/w/400/h/400/theme/dark/icon.png?c=1dxbfHSJFAPEGdCLU4o5B', tooltip: 'LinkedIn' },
+                        { name: 'YouTube', url: 'https://youtube.com', img: 'https://cdn.brandfetch.io/idVfYwcuQz/theme/dark/symbol.svg?c=1dxbfHSJFAPEGdCLU4o5B', tooltip: 'YouTube' },
+                        { name: 'Reddit', url: 'https://reddit.com', img: 'https://redditinc.com/hubfs/Reddit%20Inc/Content/Brand%20Page/Reddit_Lockup_Logo.svg', tooltip: 'Reddit' }
                     ]
                 },
                 {
                     type: 'tools-and-utilities',
                     links: [
-                        {
-                            name: 'GitHub',
-                            url: 'https://github.com',
-                            img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Octicons-mark-github.svg/3840px-Octicons-mark-github.svg.png',
-                            tooltip: 'GitHub'
-                        },
-                        {
-                            name: 'Camscanner',
-                            url: 'https://camscanner.com',
-                            img: 'https://cdn.brandfetch.io/idzURbX6fz/w/48/h/48/theme/dark/logo.png?c=1bxid64Mup7aczewSAYMX&t=1781746780516',
-                            tooltip: 'Camscanner'
-                        },
-                        {
-                            name: 'CF-Toolkit',
-                            url: 'https://web1page2.github.io/pages/cf-toolkit.html',
-                            img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcStUWHK7dAHZU5a4wtW3Z0oCzzgG6FYo72E6zFWjjFaSw&s=10',
-                            tooltip: 'CF-Toolkit'
-                        }
-                        
+                        { name: 'GitHub', url: 'https://github.com', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Octicons-mark-github.svg/3840px-Octicons-mark-github.svg.png', tooltip: 'GitHub' },
+                        { name: 'Camscanner', url: 'https://camscanner.com', img: 'https://cdn.brandfetch.io/idzURbX6fz/w/48/h/48/theme/dark/logo.png?c=1bxid64Mup7aczewSAYMX&t=1781746780516', tooltip: 'Camscanner' },
+                        { name: 'CF-Toolkit', url: 'https://web1page2.github.io/pages/cf-toolkit.html', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcStUWHK7dAHZU5a4wtW3Z0oCzzgG6FYo72E6zFWjjFaSw&s=10', tooltip: 'CF-Toolkit' }
                     ]
                 },
                 {
                     type: 'AI-tools',
                     links: [
-                        {
-                            name: 'ChatGPT',
-                            url: 'https://chat.openai.com',
-                            img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/ChatGPT-Logo.svg/3840px-ChatGPT-Logo.svg.png',
-                            tooltip: 'ChatGPT'
-                        },
-                        {
-                            name: 'Gemini',
-                            url: 'https://gemini.com',
-                            img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Google_Gemini_icon_2025.svg/250px-Google_Gemini_icon_2025.svg.png',
-                            tooltip: 'Gemini'
-                        },
-                        {
-                            name: 'Copilot',
-                            url: 'https://copilot.microsoft.com',
-                            img: 'https://learningtech.uncg.edu/wp-content/uploads/2025/10/app-page-logo_copilot.png',
-                            tooltip: 'Copilot'
-                        },
-                        {
-                            name: 'DeepSeek',
-                            url: 'https://deepseek.com',
-                            img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/DeepSeek-icon.svg/960px-DeepSeek-icon.svg.png',
-                            tooltip: 'DeepSeek'
-                        },
-                        {
-                            name: 'Grok',
-                            url: 'https://grok.com',
-                            img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Grok-icon.svg/960px-Grok-icon.svg.png',
-                            tooltip: 'Grok'
-                        }
+                        { name: 'ChatGPT', url: 'https://chat.openai.com', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/ChatGPT-Logo.svg/3840px-ChatGPT-Logo.svg.png', tooltip: 'ChatGPT' },
+                        { name: 'Gemini', url: 'https://gemini.com', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Google_Gemini_icon_2025.svg/250px-Google_Gemini_icon_2025.svg.png', tooltip: 'Gemini' },
+                        { name: 'Copilot', url: 'https://copilot.microsoft.com', img: 'https://learningtech.uncg.edu/wp-content/uploads/2025/10/app-page-logo_copilot.png', tooltip: 'Copilot' },
+                        { name: 'DeepSeek', url: 'https://deepseek.com', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/DeepSeek-icon.svg/960px-DeepSeek-icon.svg.png', tooltip: 'DeepSeek' },
+                        { name: 'Grok', url: 'https://grok.com', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Grok-icon.svg/960px-Grok-icon.svg.png', tooltip: 'Grok' }
                     ]
                 }
             ];
@@ -328,25 +209,42 @@
             links.forEach(category => {
                 let subContainer = document.createElement('div');
                 subContainer.classList.add('sub-container');
-                subContainer.innerHTML = `<h3>${category.type.replace(/-/g, ' ')}</h3>`;
+                
+                let headerWrapper = document.createElement('div');
+                headerWrapper.classList.add('header-wrapper');
+                
+                let title = document.createElement('h3');
+                title.innerText = category.type.replace(/-/g, ' ');
+                
+                let toggleBtn = document.createElement('button');
+                toggleBtn.classList.add('toggle-btn');
+                toggleBtn.innerText = '+';
+                
+                toggleBtn.addEventListener('click', () => {
+                    subContainer.classList.toggle('expanded');
+                });
+
+                headerWrapper.appendChild(title);
+                headerWrapper.appendChild(toggleBtn);
+                subContainer.appendChild(headerWrapper);
+
+                // Added hr element right after the header wrapper
+                let hr = document.createElement('hr');
+                subContainer.appendChild(hr);
 
                 category.links.forEach(link => {
                     let linkElement = document.createElement('a');
-                    linkElement.classList.add('tooltip');
                     linkElement.href = link.url;
                     linkElement.target = '_blank';
                     linkElement.innerHTML = `
-                        <div class="tooltip">
-                            <img src="${link.img}" alt="${link.name}">
-                            <span class="tooltiptext">${link.tooltip}</span>
-                        </div>
+                        <img src="${link.img}" alt="${link.name}">
+                        <span class="tooltiptext">${link.tooltip}</span>
                     `;
                     subContainer.appendChild(linkElement);
                 });
 
                 container.appendChild(subContainer);
             });
-
         </script>
     </body>
 </html>
