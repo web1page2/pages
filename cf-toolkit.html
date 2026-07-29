@@ -71,6 +71,16 @@
             width: 250px;
         }
 
+        .rating-range {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .rating-range input {
+            width: 80px;
+        }
+
         .stats-bar {
             display: flex;
             justify-content: space-between;
@@ -251,6 +261,13 @@
         <h1>Codeforces Problem Set</h1>
         <div class="controls">
             <input type="text" id="searchBox" placeholder="Search by name, tag, or ID..." onkeyup="handleSearch()">
+            
+            <div class="rating-range">
+                <input type="number" id="minRating" placeholder="Min" oninput="handleRatingChange()" min="0" max="3800">
+                <span style="color: var(--text-muted);">-</span>
+                <input type="number" id="maxRating" placeholder="Max" oninput="handleRatingChange()" min="0" max="3800">
+            </div>
+
             <select id="filterStatus" onchange="handleFilterChange()">
                 <option value="all">All Problems</option>
                 <option value="notSolved">Both Not Solved</option>
@@ -371,8 +388,13 @@
 
     function applyFilterAndSort() {
         const searchVal = document.getElementById('searchBox').value.toLowerCase();
+        const minRatingVal = document.getElementById('minRating').value;
+        const maxRatingVal = document.getElementById('maxRating').value;
         const filterStatus = document.getElementById('filterStatus').value;
         const sortVal = document.getElementById('sortBy').value;
+
+        const minRating = minRatingVal !== '' ? parseInt(minRatingVal, 10) : null;
+        const maxRating = maxRatingVal !== '' ? parseInt(maxRatingVal, 10) : null;
 
         // Filter
         filteredProblems = allProblems.filter(p => {
@@ -382,6 +404,11 @@
             const matchesSearch = idStr.includes(searchVal) || nameStr.includes(searchVal) || tagsStr.includes(searchVal);
             
             if (!matchesSearch) return false;
+
+            // Rating range check
+            const pRating = p.rating;
+            if (minRating !== null && (pRating === undefined || pRating < minRating)) return false;
+            if (maxRating !== null && (pRating === undefined || pRating > maxRating)) return false;
 
             const probKey = `${p.contestId}-${p.index}`;
             const userSub = userSolvedStatus[probKey] || { cpp: false, python: false };
@@ -505,21 +532,18 @@
             return;
         }
 
-        // Find the index of the current problem within the *currently filtered and sorted* list
         const currentIndex = filteredProblems.findIndex(p => p.contestId == contestId && p.index === index);
         if (currentIndex === -1) {
             alert("Problem not found in the current view list.");
             return;
         }
 
-        // Get up to n problems starting from the current problem
         const targetProblems = filteredProblems.slice(currentIndex, currentIndex + n);
         
         if (targetProblems.length < n) {
             alert(`Note: Only ${targetProblems.length} problems available from this point onward in the current view.`);
         }
 
-        // Open each link in a new tab
         targetProblems.forEach(p => {
             const url = `https://codeforces.com/problemset/problem/${p.contestId}/${p.index}`;
             window.open(url, '_blank');
@@ -577,6 +601,10 @@
     }
 
     function handleSearch() {
+        applyFilterAndSort();
+    }
+
+    function handleRatingChange() {
         applyFilterAndSort();
     }
 
