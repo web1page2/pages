@@ -55,24 +55,75 @@
             gap: 10px;
             font-size: 14px;
         }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+
+        /* Container allowing horizontal scrolling for lengthy tables */
+        .table-container {
+            overflow-x: auto;
+            max-width: 100%;
+            border: 1px solid #ddd;
             border-radius: 4px;
-            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            background: white;
             margin-top: 20px;
         }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: white;
+            white-space: nowrap;
+        }
+
         th, td {
-            border: 1px solid #ddd;
+            border-bottom: 1px solid #ddd;
+            border-right: 1px solid #ddd;
             padding: 12px;
             text-align: left;
             vertical-align: middle;
+            min-width: 180px; /* Ensures dynamic columns maintain readable width */
         }
+
         th {
             background-color: #f1f1f1;
         }
+
+        /* --- STICKY / FIXED COLUMNS CONFIGURATION --- */
+        
+        /* Fixed Column 1: ID */
+        th:nth-child(1), 
+        td:not([colspan]):nth-child(1) {
+            position: sticky;
+            left: 0;
+            width: 140px;
+            min-width: 140px;
+            max-width: 140px;
+        }
+
+        /* Fixed Column 2: Name */
+        th:nth-child(2), 
+        td:not([colspan]):nth-child(2) {
+            position: sticky;
+            left: 140px; /* Offset equal to Column 1's width */
+            width: 200px;
+            min-width: 200px;
+            max-width: 200px;
+            /* Subtle shadow separator between fixed and scrollable columns */
+            box-shadow: 3px 0 5px -2px rgba(0,0,0,0.15); 
+        }
+
+        /* Set solid backgrounds so scrolling content passes underneath */
+        th:nth-child(1), th:nth-child(2) {
+            background-color: #f1f1f1;
+            z-index: 3;
+        }
+
+        td:not([colspan]):nth-child(1), td:not([colspan]):nth-child(2) {
+            background-color: #ffffff;
+            z-index: 2;
+        }
+
+        /* Input styling */
         input[type="text"] {
             width: 100%;
             padding: 8px;
@@ -80,6 +131,19 @@
             border: 1px solid #ccc;
             border-radius: 4px;
         }
+
+        .header-input {
+            font-weight: bold;
+            background-color: #fff;
+            text-align: center;
+            border: 1px solid #ccc;
+        }
+
+        .header-input:focus {
+            outline: 2px solid #007bff;
+            border-color: transparent;
+        }
+
         .photo-preview {
             width: 40px;
             height: 40px;
@@ -89,6 +153,7 @@
             vertical-align: middle;
             margin-right: 10px;
         }
+
         .photo-cell {
             display: flex;
             align-items: center;
@@ -98,7 +163,7 @@
 <body>
 
     <h2>Data Editor</h2>
-    <p>Upload file, edit entries, add custom columns, and download updated file as <strong>info.json</strong>.</p>
+    <p>Upload file, edit entries, add custom columns, edit column keys, and download as <strong>info.json</strong>.</p>
     
     <div class="btn-container">
         <div class="file-upload-box">
@@ -114,20 +179,22 @@
         <button onclick="downloadJSON()">Download</button>
     </div>
 
-    <table id="dataTable">
-        <thead>
-            <tr id="headerRow">
-                <th>ID</th>
-                <th>Name</th>
-                <th>Photo</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td colspan="3" style="text-align: center; color: #777;">Please upload a JSON file.</td>
-            </tr>
-        </tbody>
-    </table>
+    <div class="table-container">
+        <table id="dataTable">
+            <thead>
+                <tr id="headerRow">
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Photo Upload</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td colspan="3" style="text-align: center; color: #777;">Please upload a JSON file.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 
     <script>
         let currentJSONData = { info: [] };
@@ -175,7 +242,8 @@
                 obj.photo = rowDataStore[index] !== undefined ? rowDataStore[index] : "";
 
                 dynamicColumns.forEach(col => {
-                    const input = row.querySelector(`.input-${col}`);
+                    const escapedCol = col.replace(/"/g, '\\"');
+                    const input = row.querySelector(`input[data-key="${escapedCol}"]`);
                     obj[col] = input ? input.value : "";
                 });
 
@@ -228,14 +296,48 @@
         function rebuildHeaders() {
             const headerRow = document.getElementById("headerRow");
             let html = `
-                <th style="width: 20%;">ID</th>
-                <th style="width: 30%;">Name</th>
-                <th style="width: 25%;">Photo Upload</th>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Photo Upload</th>
             `;
-            dynamicColumns.forEach(col => {
-                html += `<th>${escapeHtml(col)}</th>`;
+            dynamicColumns.forEach((col, index) => {
+                html += `<th>
+                            <input type="text" class="header-input" value="${escapeHtml(col)}" onchange="renameColumn(this, ${index})" title="Edit column name">
+                         </th>`;
             });
             headerRow.innerHTML = html;
+        }
+
+        function renameColumn(inputElement, index) {
+            const oldKey = dynamicColumns[index];
+            let newKey = inputElement.value.trim();
+
+            if (!newKey) {
+                alert("Column name cannot be empty.");
+                inputElement.value = oldKey;
+                return;
+            }
+
+            if (newKey === oldKey) return;
+
+            if (newKey === "id" || newKey === "name" || newKey === "photo" || dynamicColumns.includes(newKey)) {
+                alert("Column name already exists or is reserved.");
+                inputElement.value = oldKey;
+                return;
+            }
+
+            dynamicColumns[index] = newKey;
+
+            const rows = document.querySelectorAll("#dataTable tbody tr");
+            rows.forEach(row => {
+                const escapedOldKey = oldKey.replace(/"/g, '\\"');
+                const tdInput = row.querySelector(`input[data-key="${escapedOldKey}"]`);
+                if (tdInput) {
+                    tdInput.setAttribute('data-key', newKey);
+                }
+            });
+
+            getTableData();
         }
 
         function addColumn() {
@@ -269,7 +371,8 @@
 
                 const dynValues = {};
                 dynamicColumns.forEach(col => {
-                    const existingInput = row.querySelector(`.input-${col}`);
+                    const escapedCol = col.replace(/"/g, '\\"');
+                    const existingInput = row.querySelector(`input[data-key="${escapedCol}"]`);
                     dynValues[col] = existingInput ? existingInput.value : "";
                 });
 
@@ -281,7 +384,7 @@
             let dynTDs = "";
             dynamicColumns.forEach(col => {
                 let val = dynValues[col] !== undefined ? dynValues[col] : "";
-                dynTDs += `<td><input type="text" class="input-${col}" value="${escapeHtml(val)}" oninput="getTableData()"></td>`;
+                dynTDs += `<td><input type="text" data-key="${escapeHtml(col)}" value="${escapeHtml(val)}" oninput="getTableData()"></td>`;
             });
 
             return `
