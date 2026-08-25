@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Update Data</title>
+        <title>Data Collection</title>
         <style>
             body {
                 font-family: monospace;
@@ -34,14 +34,13 @@
                 box-sizing: border-box;
             }
             button {
-                flex: 1;
+                width: 100%;
                 padding: 11px;
                 border: none;
                 border-radius: 4px;
                 font-weight: bold;
                 color: #fff;
                 cursor: pointer;
-                width: 100%;
             }
             .btn-save {
                 background-color: #28a745;
@@ -166,19 +165,17 @@
                 </div>
             </form>
 
-            <div id="response" class=""></div>
+            <div id="response"></div>
         </div>
 
         <script>
-            // Replace with your current active deployment URL
+            // Replace with your Google Apps Script Deployment Web App URL
             const SCRIPT_URL =
-                "https://script.google.com/macros/s/AKfycbyz91up_gZc8EUs6o-SYufnEAQU35h-GeEG6LfcTSG0kRgqauQmylaWzVFN_Gk9Az3t/exec";
+                "https://script.google.com/macros/s/AKfycby7UdaCMEOcr9M2hvkBZlXe_kAaqfxitSW8x5dijqetAHMdV2r9numA3Ft_AyR2rb0g/exec";
 
             async function getClientIp() {
                 try {
-                    const res = await fetch(
-                        "https://api.ipify.org?format=json",
-                    );
+                    const res = await fetch("https://api.ipify.org?format=json");
                     const data = await res.json();
                     return data.ip;
                 } catch (e) {
@@ -188,10 +185,7 @@
 
             function fileToBase64(file) {
                 return new Promise((resolve, reject) => {
-                    if (!file) {
-                        resolve(null);
-                        return;
-                    }
+                    if (!file) return resolve(null);
                     const reader = new FileReader();
                     reader.onload = () =>
                         resolve({
@@ -214,16 +208,13 @@
                     return;
                 }
 
-                // UI Loading state
                 btn.disabled = true;
-                btn.innerText = "Updating...";
-                responseDiv.innerText =
-                    "Please wait, sending data to server...";
+                btn.innerText = "Processing...";
+                responseDiv.innerText = "Sending request...";
 
                 try {
                     const clientIp = await getClientIp();
-                    const photoInput =
-                        document.getElementById("photo").files[0];
+                    const photoInput = document.getElementById("photo").files[0];
                     const photoFile = await fileToBase64(photoInput);
 
                     const payload = {
@@ -237,8 +228,7 @@
                             whatsapp: document.getElementById("whatsapp").value,
                             district: document.getElementById("district").value,
                             address: document.getElementById("address").value,
-                            codeforces:
-                                document.getElementById("codeforces").value,
+                            codeforces: document.getElementById("codeforces").value,
                             college: document.getElementById("college").value,
                             facebook: document.getElementById("facebook").value,
                             photoFile: photoFile,
@@ -247,7 +237,7 @@
 
                     const res = await fetch(SCRIPT_URL, {
                         method: "POST",
-                        headers: { "Content-Type": "text/plain;charset=utf-8" }, // Bypasses strict CORS preflight
+                        headers: { "Content-Type": "text/plain;charset=utf-8" },
                         body: JSON.stringify(payload),
                     });
 
@@ -257,25 +247,40 @@
                     try {
                         json = JSON.parse(rawText);
                     } catch (parseErr) {
-                        console.error("Raw Server Response:", rawText);
                         throw new Error(
-                            "Server did not return valid JSON. Check the browser console to see what Google Apps Script returned. (Did you deploy the script correctly?)",
+                            "Invalid server response (HTML returned instead of JSON). Check script deployment settings."
                         );
                     }
 
-                    if (
-                        json.status === "success" ||
-                        json.result === "success"
-                    ) {
-                        responseDiv.innerText = "Data updated successfully!";
-                    } else {
+                    if (json.status === "success") {
                         responseDiv.innerText =
-                            "Server Error: " +
-                            (json.message || JSON.stringify(json));
+                            "Success: " + JSON.stringify(json.result, null, 2);
+
+                        // Auto populate if action was READ
+                        if (action === "READ" && json.result) {
+                            const d = json.result;
+                            document.getElementById("name").value = d.name || "";
+                            document.getElementById("email").value = d.email || "";
+                            document.getElementById("phone").value = d.phone || "";
+                            document.getElementById("whatsapp").value = d.whatsapp || "";
+                            document.getElementById("district").value = d.district || "";
+                            document.getElementById("address").value = d.address || "";
+                            document.getElementById("college").value = d.college || "";
+                            document.getElementById("facebook").value = d.facebook || "";
+                            document.getElementById("codeforces").value = d.codeforces || "";
+
+                            if (d.photo && typeof d.photo === "string" && d.photo.startsWith("http")) {
+                                const imgPreview = document.getElementById("previewImg");
+                                imgPreview.src = d.photo;
+                                imgPreview.style.display = "block";
+                            }
+                        }
+                    } else {
+                        responseDiv.innerText = "Backend Error: " + json.message;
                     }
                 } catch (err) {
                     responseDiv.innerText = "Request Failed: " + err.message;
-                    console.error("Full Error:", err);
+                    console.error(err);
                 } finally {
                     btn.disabled = false;
                     btn.innerText = "Update";
