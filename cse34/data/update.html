@@ -100,7 +100,7 @@
                         placeholder="example@gmail.com"
                     />
                 </div>
-                <div class="form-group">
+                <div class="form-group hide">
                     <label>Phone Number:</label>
                     <input type="text" id="phone" placeholder="Mobile number" />
                 </div>
@@ -132,7 +132,7 @@
                         placeholder="College name"
                     />
                 </div>
-                <div class="form-group">
+                <div class="form-group hide">
                     <label>Facebook Profile Link:</label>
                     <input
                         type="text"
@@ -140,7 +140,7 @@
                         placeholder="https://facebook.com/..."
                     />
                 </div>
-                <div class="form-group">
+                <div class="form-group hide">
                     <label>Codeforces:</label>
                     <input
                         type="text"
@@ -165,7 +165,7 @@
 
         <script>
             const SCRIPT_URL =
-                "https://script.google.com/macros/s/AKfycbwL7OpeLTU0EEbsXl1c9VXLNbnmXmQtz15L8OBlvPSN5smhjwdnk-IXHB6calF8QFwn/exec";
+                "https://script.google.com/macros/s/AKfycbwL_TjMKEvuDC99jfYwhByIvwIYhmJz3PrNXkAjRSnUujTCQj0ELOg3Fi1yuoskV2o9/exec";
 
             async function getClientIp() {
                 try {
@@ -259,6 +259,8 @@
                             d.college || "";
                         document.getElementById("facebook").value =
                             d.facebook || "";
+                        document.getElementById("codeforces").value =
+                            d.codeforces || "";
 
                         if (d.photo && d.photo.startsWith("data:image")) {
                             const imgPreview =
