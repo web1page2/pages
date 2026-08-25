@@ -120,7 +120,7 @@
                         placeholder="District name"
                     />
                 </div>
-                <div class="form-group">
+                <div class="form-group hide">
                     <label>Address:</label>
                     <input type="text" id="address" placeholder="Address" />
                 </div>
@@ -140,6 +140,14 @@
                         placeholder="https://facebook.com/..."
                     />
                 </div>
+                <div class="form-group hide">
+                    <label>Codeforces:</label>
+                    <input
+                        type="text"
+                        id="codeforces"
+                        placeholder="Codeforces Username"
+                    />
+                </div>
 
                 <div class="buttons">
                     <button
@@ -157,7 +165,7 @@
 
         <script>
             const SCRIPT_URL =
-                "https://script.google.com/macros/s/AKfycbxmf4zLtYkwy18KpnKMZMC3_jaSG4eyZ9mfYYP9N8Bbb86_8phI525kWNsrOnv3iBxU/exec";
+                "https://script.google.com/macros/s/AKfycbwL_TjMKEvuDC99jfYwhByIvwIYhmJz3PrNXkAjRSnUujTCQj0ELOg3Fi1yuoskV2o9/exec";
 
             async function getClientIp() {
                 try {
@@ -212,7 +220,8 @@
                         phone: document.getElementById("phone").value,
                         whatsapp: document.getElementById("whatsapp").value,
                         district: document.getElementById("district").value,
-                        address: document.getElementById("address").value, // Included address payload
+                        address: document.getElementById("address").value,
+                        address: document.getElementById("codeforces").value,
                         college: document.getElementById("college").value,
                         facebook: document.getElementById("facebook").value,
                         photoFile: photoFile,
@@ -245,7 +254,7 @@
                         document.getElementById("district").value =
                             d.district || "";
                         document.getElementById("address").value =
-                            d.address || ""; // Read Address back
+                            d.address || "";
                         document.getElementById("college").value =
                             d.college || "";
                         document.getElementById("facebook").value =
