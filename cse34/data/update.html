@@ -1,291 +1,257 @@
-<!doctype html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Data Collection</title>
-        <style>
-            body {
-                font-family: monospace;
-                margin: 20px auto;
-                max-width: 500px;
-                padding: 20px;
-                background-color: #f9f9f9;
-            }
-            h2 {
-                color: #333;
-            }
-            .form-group {
-                margin-bottom: 15px;
-            }
-            label {
-                display: block;
-                font-weight: bold;
-                margin-bottom: 5px;
-                color: #555;
-            }
-            input[type="text"],
-            input[type="email"],
-            input[type="file"] {
-                width: 100%;
-                padding: 10px;
-                border: 1px solid #ccc;
-                border-radius: 4px;
-                box-sizing: border-box;
-            }
-            button {
-                width: 100%;
-                padding: 11px;
-                border: none;
-                border-radius: 4px;
-                font-weight: bold;
-                color: #fff;
-                cursor: pointer;
-            }
-            .btn-save {
-                background-color: #28a745;
-            }
-            .btn-save:disabled {
-                background-color: #6c757d;
-                cursor: not-allowed;
-            }
-            button:hover:not(:disabled) {
-                opacity: 0.9;
-            }
-            #response {
-                margin-top: 20px;
-                padding: 15px;
-                background: #eef2f5;
-                border-radius: 4px;
-                font-family: monospace;
-                white-space: pre-wrap;
-                word-break: break-all;
-                max-height: 300px;
-                overflow-y: auto;
-            }
-            #previewImg {
-                max-width: 150px;
-                margin-top: 10px;
-                display: none;
-                border-radius: 4px;
-            }
-            .hide {
-                display: none;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="card">
-            <h2>Data Collection Form</h2>
-            <form id="crudForm">
-                <div class="form-group">
-                    <label>Roll*</label>
-                    <input
-                        type="text"
-                        id="roll"
-                        required
-                        placeholder="Enter roll"
-                    />
-                </div>
-                <div class="form-group">
-                    <label>Name:</label>
-                    <input type="text" id="name" placeholder="Full name" />
-                </div>
-                <div class="form-group">
-                    <label>Photo:</label>
-                    <input type="file" id="photo" accept="image/*" />
-                    <img id="previewImg" alt="Preview" />
-                </div>
-                <div class="form-group hide">
-                    <label>Email:</label>
-                    <input
-                        type="email"
-                        id="email"
-                        placeholder="example@gmail.com"
-                    />
-                </div>
-                <div class="form-group">
-                    <label>Phone Number:</label>
-                    <input type="text" id="phone" placeholder="Mobile number" />
-                </div>
-                <div class="form-group hide">
-                    <label>WhatsApp Number:</label>
-                    <input
-                        type="text"
-                        id="whatsapp"
-                        placeholder="WhatsApp number"
-                    />
-                </div>
-                <div class="form-group">
-                    <label>District:</label>
-                    <input
-                        type="text"
-                        id="district"
-                        placeholder="District name"
-                    />
-                </div>
-                <div class="form-group hide">
-                    <label>Address:</label>
-                    <input type="text" id="address" placeholder="Address" />
-                </div>
-                <div class="form-group">
-                    <label>College Name:</label>
-                    <input
-                        type="text"
-                        id="college"
-                        placeholder="College name"
-                    />
-                </div>
-                <div class="form-group">
-                    <label>Facebook Profile Link:</label>
-                    <input
-                        type="text"
-                        id="facebook"
-                        placeholder="https://facebook.com/..."
-                    />
-                </div>
-                <div class="form-group">
-                    <label>Codeforces Handle:</label>
-                    <input
-                        type="text"
-                        id="codeforces"
-                        placeholder="Codeforces Username"
-                    />
-                </div>
+const SPREADSHEET_NAME = "data";
+const HEADERS = [
+  "roll", "name", "photo", "email", "phone number", 
+  "whatsapp number", "district", "address", "college name", 
+  "facebook link", "codeforces", "timeStamp", "ip"
+];
 
-                <div class="buttons">
-                    <button
-                        type="button"
-                        class="btn-save"
-                        id="submitBtn"
-                        onclick="sendRequest('CREATE')"
-                    >
-                        Update
-                    </button>
-                </div>
-            </form>
+// Upload base64 image to Drive and return a raw download link for the IMAGE() formula
+function uploadPhotoToDrive(photoFile, roll) {
+  try {
+    const folderName = "Student_Photos";
+    let folder;
+    const folders = DriveApp.getFoldersByName(folderName);
+    if (folders.hasNext()) {
+      folder = folders.next();
+    } else {
+      folder = DriveApp.createFolder(folderName);
+    }
 
-            <div id="response"></div>
-        </div>
+    const decoded = Utilities.base64Decode(photoFile.base64Data);
+    const blob = Utilities.newBlob(decoded, photoFile.mimeType, `photo_${roll}_${Date.now()}`);
+    const file = folder.createFile(blob);
+    file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
 
-        <script>
-            // Replace with your Google Apps Script Deployment Web App URL
-            const SCRIPT_URL =
-                "https://script.google.com/macros/s/AKfycby7UdaCMEOcr9M2hvkBZlXe_kAaqfxitSW8x5dijqetAHMdV2r9numA3Ft_AyR2rb0g/exec";
+    // CRUCIAL FIX: 'export=download' allows Google Sheets to fetch the raw image bytes
+    return `https://drive.google.com/uc?export=download&id=${file.getId()}`;
+  } catch (err) {
+    Logger.log("Drive Upload Error: " + err.toString());
+    return "";
+  }
+}
 
-            async function getClientIp() {
-                try {
-                    const res = await fetch("https://api.ipify.org?format=json");
-                    const data = await res.json();
-                    return data.ip;
-                } catch (e) {
-                    return "127.0.0.1";
-                }
-            }
+// 1. Get or create sheet
+function getOrCreateSheet() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName(SPREADSHEET_NAME);
+  if (!sheet) {
+    sheet = ss.insertSheet(SPREADSHEET_NAME);
+    sheet.appendRow(HEADERS);
+    sheet.getRange(1, 1, 1, HEADERS.length).setFontWeight("bold");
+  }
+  return sheet;
+}
 
-            function fileToBase64(file) {
-                return new Promise((resolve, reject) => {
-                    if (!file) return resolve(null);
-                    const reader = new FileReader();
-                    reader.onload = () =>
-                        resolve({
-                            base64Data: reader.result.split(",")[1],
-                            mimeType: file.type,
-                            fileName: file.name,
-                        });
-                    reader.onerror = reject;
-                    reader.readAsDataURL(file);
-                });
-            }
+// 2. HTTP POST Handler
+function doPost(e) {
+  try {
+    if (!e || !e.postData || !e.postData.contents) {
+      throw new Error("Empty request payload received.");
+    }
 
-            async function sendRequest(action) {
-                const btn = document.getElementById("submitBtn");
-                const responseDiv = document.getElementById("response");
-                const roll = document.getElementById("roll").value.trim();
+    const requestData = JSON.parse(e.postData.contents);
+    const action = requestData.action;
+    const payload = requestData.data || {};
+    const clientIp = requestData.clientIp || "0.0.0.0";
 
-                if (!roll) {
-                    responseDiv.innerText = "Error: Roll field is required.";
-                    return;
-                }
+    let result;
+    if (action === "CREATE" || action === "UPDATE") {
+      result = createOrUpdateData(payload, clientIp);
+    } else if (action === "READ") {
+      result = readData(payload.roll);
+    } else if (action === "DELETE") {
+      result = deleteData(payload.roll);
+    } else {
+      throw new Error("Invalid action specified.");
+    }
 
-                btn.disabled = true;
-                btn.innerText = "Processing...";
-                responseDiv.innerText = "Sending request...";
+    return ContentService.createTextOutput(JSON.stringify({ status: "success", result: result }))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({ status: "error", message: err.toString() }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
 
-                try {
-                    const clientIp = await getClientIp();
-                    const photoInput = document.getElementById("photo").files[0];
-                    const photoFile = await fileToBase64(photoInput);
+// 3. CREATE or UPDATE Logic
+function createOrUpdateData(data, clientIp) {
+  if (!data.roll) throw new Error("'roll' field is mandatory.");
 
-                    const payload = {
-                        action: action,
-                        clientIp: clientIp,
-                        data: {
-                            roll: roll,
-                            name: document.getElementById("name").value,
-                            email: document.getElementById("email").value,
-                            phone: document.getElementById("phone").value,
-                            whatsapp: document.getElementById("whatsapp").value,
-                            district: document.getElementById("district").value,
-                            address: document.getElementById("address").value,
-                            codeforces: document.getElementById("codeforces").value,
-                            college: document.getElementById("college").value,
-                            facebook: document.getElementById("facebook").value,
-                            photoFile: photoFile,
-                        },
-                    };
+  const sheet = getOrCreateSheet();
+  const rows = sheet.getDataRange().getValues();
+  const formulas = sheet.getDataRange().getFormulas(); // Need formulas to preserve existing images
+  const rollIndex = 0;
+  
+  let targetRowIndex = -1;
+  let currentRowData = [];
+  let currentRowFormulas = [];
+  let existingIpList = [];
 
-                    const res = await fetch(SCRIPT_URL, {
-                        method: "POST",
-                        headers: { "Content-Type": "text/plain;charset=utf-8" },
-                        body: JSON.stringify(payload),
-                    });
+  for (let i = 1; i < rows.length; i++) {
+    if (String(rows[i][rollIndex]) === String(data.roll)) {
+      targetRowIndex = i + 1;
+      currentRowData = rows[i];
+      currentRowFormulas = formulas[i];
+      
+      let rawIp = currentRowData[12];
+      if (rawIp) {
+        try {
+          let parsed = JSON.parse(rawIp);
+          existingIpList = Array.isArray(parsed) ? parsed : [String(rawIp)];
+        } catch (e) {
+          existingIpList = [String(rawIp)];
+        }
+      }
+      break;
+    }
+  }
 
-                    const rawText = await res.text();
-                    let json;
+  if (clientIp && clientIp !== "0.0.0.0" && !existingIpList.includes(clientIp)) {
+    existingIpList.push(clientIp);
+  }
 
-                    try {
-                        json = JSON.parse(rawText);
-                    } catch (parseErr) {
-                        throw new Error(
-                            "Invalid server response (HTML returned instead of JSON). Check script deployment settings."
-                        );
-                    }
+  const timestamp = new Date().toISOString();
+  
+  let photoUrl = "";
+  if (data.photoFile && data.photoFile.base64Data) {
+    photoUrl = uploadPhotoToDrive(data.photoFile, data.roll);
+  }
 
-                    if (json.status === "success") {
-                        responseDiv.innerText =
-                            "Success: " + JSON.stringify(json.result, null, 2);
+  let activeRow;
 
-                        // Auto populate if action was READ
-                        if (action === "READ" && json.result) {
-                            const d = json.result;
-                            document.getElementById("name").value = d.name || "";
-                            document.getElementById("email").value = d.email || "";
-                            document.getElementById("phone").value = d.phone || "";
-                            document.getElementById("whatsapp").value = d.whatsapp || "";
-                            document.getElementById("district").value = d.district || "";
-                            document.getElementById("address").value = d.address || "";
-                            document.getElementById("college").value = d.college || "";
-                            document.getElementById("facebook").value = d.facebook || "";
-                            document.getElementById("codeforces").value = d.codeforces || "";
+  if (targetRowIndex > -1) {
+    // If no new photo, keep the existing formula/URL
+    const existingPhotoValue = currentRowFormulas[2] || currentRowData[2] || "";
+    const finalPhotoField = photoUrl ? `=IMAGE("${photoUrl}")` : existingPhotoValue;
+    
+    const updatedRow = [
+      data.roll,
+      data.name || currentRowData[1], 
+      finalPhotoField, 
+      data.email || currentRowData[3],
+      data.phone || currentRowData[4],
+      data.whatsapp || currentRowData[5],
+      data.district || currentRowData[6],
+      data.address || currentRowData[7],
+      data.college || currentRowData[8],
+      data.facebook || currentRowData[9],
+      data.codeforces || currentRowData[10],
+      timestamp, 
+      JSON.stringify(existingIpList)
+    ];
 
-                            if (d.photo && typeof d.photo === "string" && d.photo.startsWith("http")) {
-                                const imgPreview = document.getElementById("previewImg");
-                                imgPreview.src = d.photo;
-                                imgPreview.style.display = "block";
-                            }
-                        }
-                    } else {
-                        responseDiv.innerText = "Backend Error: " + json.message;
-                    }
-                } catch (err) {
-                    responseDiv.innerText = "Request Failed: " + err.message;
-                    console.error(err);
-                } finally {
-                    btn.disabled = false;
-                    btn.innerText = "Update";
-                }
-            }
-        </script>
-    </body>
-</html>
+    sheet.getRange(targetRowIndex, 1, 1, updatedRow.length).setValues([updatedRow]);
+    activeRow = targetRowIndex;
+  } else {
+    let newIpList = (clientIp && clientIp !== "0.0.0.0") ? [clientIp] : [];
+    const finalPhotoField = photoUrl ? `=IMAGE("${photoUrl}")` : "";
+
+    const newRow = [
+      data.roll,
+      data.name || "",
+      finalPhotoField, 
+      data.email || "",
+      data.phone || "",
+      data.whatsapp || "",
+      data.district || "",
+      data.address || "",
+      data.college || "",
+      data.facebook || "",
+      data.codeforces || "",
+      timestamp,
+      JSON.stringify(newIpList)
+    ];
+
+    sheet.appendRow(newRow);
+    activeRow = sheet.getLastRow();
+  }
+
+  // Format the row/column so the cell image is actually big enough to see
+  sheet.setRowHeight(activeRow, 80);
+  if (sheet.getColumnWidth(3) < 80) {
+    sheet.setColumnWidth(3, 80);
+  }
+  sheet.getRange(activeRow, 3).setHorizontalAlignment("center").setVerticalAlignment("middle");
+
+  return { 
+    message: targetRowIndex > -1 ? "Record updated successfully" : "Record created successfully", 
+    roll: data.roll 
+  };
+}
+
+// 4. READ Logic
+function readData(roll) {
+  const sheet = getOrCreateSheet();
+  const rows = sheet.getDataRange().getValues();
+  const formulas = sheet.getDataRange().getFormulas();
+  
+  if (roll) {
+    for (let i = 1; i < rows.length; i++) {
+      if (String(rows[i][0]) === String(roll)) {
+        return parseRowToObj(rows[i], formulas[i]);
+      }
+    }
+    throw new Error("Record not found for roll: " + roll);
+  } else {
+    return rows.slice(1).map((row, idx) => parseRowToObj(row, formulas[idx + 1]));
+  }
+}
+
+// 5. DELETE Logic
+function deleteData(roll) {
+  if (!roll) throw new Error("'roll' is required for deletion.");
+  const sheet = getOrCreateSheet();
+  const rows = sheet.getDataRange().getValues();
+  
+  for (let i = 1; i < rows.length; i++) {
+    if (String(rows[i][0]) === String(roll)) {
+      sheet.deleteRow(i + 1);
+      return { message: "Record deleted successfully", roll: roll };
+    }
+  }
+  throw new Error("Record not found for roll: " + roll);
+}
+
+// Helper: Extract formula URL and convert row array to JSON response
+function parseRowToObj(row, formulaRow) {
+  let photoValue = row[2];
+  let photoFormula = formulaRow[2];
+  
+  let finalPhotoUrl = photoValue;
+  
+  // Extract pure URL from =IMAGE("url") so frontend can display it
+  if (photoFormula && photoFormula.toUpperCase().startsWith("=IMAGE")) {
+    const match = photoFormula.match(/=IMAGE\("(.*?)"/i);
+    if (match && match[1]) {
+      finalPhotoUrl = match[1];
+    }
+  }
+
+  let parsedIp = [];
+  try {
+    let rawIp = row[12];
+    if (rawIp && typeof rawIp === 'string' && rawIp.startsWith('[')) {
+      parsedIp = JSON.parse(rawIp);
+    } else if (rawIp) {
+      parsedIp = [String(rawIp)];
+    }
+  } catch(e) {
+    parsedIp = [String(row[12])];
+  }
+
+  return {
+    roll: row[0],
+    name: row[1],
+    photo: finalPhotoUrl,
+    email: row[3],
+    phone: row[4],
+    whatsapp: row[5],
+    district: row[6],
+    address: row[7],
+    college: row[8],
+    facebook: row[9],
+    codeforces: row[10],
+    timeStamp: row[11],
+    ip: parsedIp
+  };
+}
