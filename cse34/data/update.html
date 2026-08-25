@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Update</title>
+        <style>
+            body {
+                font-family: monospace;
+                margin: 20px auto;
+                max-width: 500px;
+                padding: 20px;
+                background-color: #f9f9f9;
+            }
+            h2 {
+                color: #333;
+            }
+            .form-group {
+                margin-bottom: 15px;
+            }
+            label {
+                display: block;
+                font-weight: bold;
+                margin-bottom: 5px;
+                color: #555;
+            }
+            input[type="text"],
+            input[type="email"],
+            input[type="file"] {
+                width: 100%;
+                padding: 10px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                box-sizing: border-box;
+            }
+            button {
+                flex: 1;
+                padding: 11px;
+                border: none;
+                border-radius: 4px;
+                font-weight: bold;
+                color: #fff;
+                cursor: pointer;
+            }
+            .btn-save {
+                background-color: #28a745;
+            }
+            button:hover {
+                opacity: 0.9;
+            }
+            #response {
+                margin-top: 20px;
+                padding: 15px;
+                background: #eef2f5;
+                border-radius: 4px;
+                font-family: monospace;
+                white-space: pre-wrap;
+                word-break: break-all;
+                max-height: 300px;
+                overflow-y: auto;
+            }
+            #previewImg {
+                max-width: 150px;
+                margin-top: 10px;
+                display: none;
+                border-radius: 4px;
+            }
+            .hide {
+                display: none;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="card">
+            <h2>Data Collection Form</h2>
+            <form id="crudForm">
+                <div class="form-group">
+                    <label>Roll*</label>
+                    <input
+                        type="text"
+                        id="roll"
+                        required
+                        placeholder="Enter roll"
+                    />
+                </div>
+                <div class="form-group">
+                    <label>Name:</label>
+                    <input type="text" id="name" placeholder="Full name" />
+                </div>
+                <div class="form-group">
+                    <label>Photo:</label>
+                    <input type="file" id="photo" accept="image/*" />
+                    <img id="previewImg" alt="Preview" />
+                </div>
+                <div class="form-group hide">
+                    <label>Email:</label>
+                    <input
+                        type="email"
+                        id="email"
+                        placeholder="example@gmail.com"
+                    />
+                </div>
+                <div class="form-group hide">
+                    <label>Phone Number:</label>
+                    <input type="text" id="phone" placeholder="Mobile number" />
+                </div>
+                <div class="form-group hide">
+                    <label>WhatsApp Number:</label>
+                    <input
+                        type="text"
+                        id="whatsapp"
+                        placeholder="WhatsApp number"
+                    />
+                </div>
+                <div class="form-group">
+                    <label>District:</label>
+                    <input
+                        type="text"
+                        id="district"
+                        placeholder="District name"
+                    />
+                </div>
+                <div class="form-group">
+                    <label>College Name:</label>
+                    <input
+                        type="text"
+                        id="college"
+                        placeholder="College name"
+                    />
+                </div>
+                <div class="form-group hide">
+                    <label>Facebook Profile Link:</label>
+                    <input
+                        type="text"
+                        id="facebook"
+                        placeholder="https://facebook.com/..."
+                    />
+                </div>
+
+                <div class="buttons">
+                    <button
+                        type="button"
+                        class="btn-save"
+                        onclick="sendRequest('CREATE')"
+                    >
+                        Update
+                    </button>
+                </div>
+            </form>
+
+            <div id="response" class=""></div>
+        </div>
+
+        <script>
+            const SCRIPT_URL =
+                "https://script.google.com/macros/s/AKfycbzrbTZQllOEqtli0a86MxCixXDw44dq5rScq8ytrSIbOsWteg_2PwNI9WVg5SOf37CI/exec";
+
+            async function getClientIp() {
+                try {
+                    const res = await fetch(
+                        "https://api.ipify.org?format=json",
+                    );
+                    const data = await res.json();
+                    return data.ip;
+                } catch (e) {
+                    return "127.0.0.1";
+                }
+            }
+
+            function fileToBase64(file) {
+                return new Promise((resolve, reject) => {
+                    if (!file) return resolve(null);
+                    const reader = new FileReader();
+                    reader.onload = () =>
+                        resolve({
+                            base64Data: reader.result.split(",")[1],
+                            mimeType: file.type,
+                            fileName: file.name,
+                        });
+                    reader.onerror = reject;
+                    reader.readAsDataURL(file);
+                });
+            }
+
+            async function sendRequest(action) {
+                const roll = document.getElementById("roll").value.trim();
+                const responseDiv = document.getElementById("response");
+                responseDiv.innerText = "Please wait...";
+
+                if (!roll) {
+                    alert("Roll is required.");
+                    responseDiv.innerText = "Error: Roll field is required.";
+                    return;
+                }
+
+                const clientIp = await getClientIp();
+                const photoFile = await fileToBase64(
+                    document.getElementById("photo").files[0],
+                );
+
+                const payload = {
+                    action: action,
+                    clientIp: clientIp,
+                    data: {
+                        roll: roll,
+                        name: document.getElementById("name").value,
+                        email: document.getElementById("email").value,
+                        phone: document.getElementById("phone").value,
+                        whatsapp: document.getElementById("whatsapp").value,
+                        district: document.getElementById("district").value,
+                        college: document.getElementById("college").value,
+                        facebook: document.getElementById("facebook").value,
+                        photoFile: photoFile,
+                    },
+                };
+
+                try {
+                    const res = await fetch(SCRIPT_URL, {
+                        method: "POST",
+                        headers: { "Content-Type": "text/plain;charset=utf-8" },
+                        body: JSON.stringify(payload),
+                    });
+
+                    const rawText = await res.text();
+                    let json;
+
+                    try {
+                        json = JSON.parse(rawText);
+                    } catch (parseErr) {
+                        throw new Error("Received invalid response.");
+                    }
+
+                    if (action === "READ" && json.status === "success") {
+                        const d = json.result;
+                        document.getElementById("name").value = d.name || "";
+                        document.getElementById("email").value = d.email || "";
+                        document.getElementById("phone").value = d.phone || "";
+                        document.getElementById("whatsapp").value =
+                            d.whatsapp || "";
+                        document.getElementById("district").value =
+                            d.district || "";
+                        document.getElementById("college").value =
+                            d.college || "";
+                        document.getElementById("facebook").value =
+                            d.facebook || "";
+
+                        if (d.photo && d.photo.startsWith("data:image")) {
+                            const imgPreview =
+                                document.getElementById("previewImg");
+                            imgPreview.src = d.photo;
+                            imgPreview.style.display = "block";
+                        }
+                    }
+                    if (json.status === "success")
+                        responseDiv.innerText = "Updated";
+                } catch (err) {
+                    responseDiv.innerText = "Error";
+                }
+            }
+        </script>
+    </body>
+</html>
