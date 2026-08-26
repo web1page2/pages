@@ -3,17 +3,20 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Data Collection</title>
+        <title>Data Collection Form</title>
         <style>
             body {
                 font-family: monospace;
-                margin: 20px auto;
-                max-width: 500px;
+                background-color: #f4f4f9;
                 padding: 20px;
-                background-color: #f9f9f9;
             }
-            h2 {
-                color: #333;
+            .container {
+                max-width: 600px;
+                margin: auto;
+                background: white;
+                padding: 20px;
+                border-radius: 8px;
+                box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
             }
             .form-group {
                 margin-bottom: 15px;
@@ -22,53 +25,33 @@
                 display: block;
                 font-weight: bold;
                 margin-bottom: 5px;
-                color: #555;
             }
             input[type="text"],
             input[type="email"],
+            input[type="number"],
             input[type="file"] {
+                font-family: monospace;
                 width: 100%;
-                padding: 10px;
-                border: 1px solid #ccc;
-                border-radius: 4px;
+                padding: 8px;
                 box-sizing: border-box;
             }
             button {
-                width: 100%;
-                padding: 11px;
+                background: #28a745;
+                color: white;
                 border: none;
-                border-radius: 4px;
-                font-weight: bold;
-                color: #fff;
+                padding: 10px 15px;
+                font-size: 16px;
                 cursor: pointer;
+                border-radius: 5px;
+                width: 100%;
             }
-            .btn-save {
-                background-color: #28a745;
+            button:hover {
+                background: #218838;
             }
-            .btn-save:disabled {
-                background-color: #6c757d;
-                cursor: not-allowed;
-            }
-            button:hover:not(:disabled) {
-                opacity: 0.9;
-            }
-            #response {
-                margin-top: 20px;
-                padding: 15px;
-                background: #eef2f5;
-                border-radius: 4px;
-                font-family: monospace;
-                white-space: pre-wrap;
-                word-break: break-all;
-                max-height: 300px;
-                overflow-y: auto;
-            }
-            #previewImg {
-                max-width: 150px;
-                margin-top: 10px;
-                display: none;
-                border-radius: 4px;
-                border: 1px solid #ddd;
+            #status {
+                margin-top: 15px;
+                font-weight: bold;
+                text-align: center;
             }
             .hide {
                 display: none;
@@ -76,183 +59,153 @@
         </style>
     </head>
     <body>
-        <div class="card">
-            <h2>Data Collection Form</h2>
-            <form id="crudForm">
+        <div class="container">
+            <h2>Update Information</h2>
+
+            <form id="dataForm">
                 <div class="form-group">
-                    <label>Roll*</label>
-                    <input type="text" id="roll" required placeholder="Enter roll" />
+                    <label>Roll Number *</label
+                    ><input type="number" id="roll" required />
                 </div>
                 <div class="form-group">
-                    <label>Name:</label>
-                    <input type="text" id="name" placeholder="Full name" />
+                    <label>Name</label><input type="text" id="name" />
                 </div>
                 <div class="form-group">
-                    <label>Photo:</label>
-                    <input type="file" id="photo" accept="image/*" />
-                    <img id="previewImg" alt="Preview" />
+                    <label>Photo</label
+                    ><input type="file" id="photo" accept="image/*" />
                 </div>
                 <div class="form-group hide">
-                    <label>Email:</label>
-                    <input type="email" id="email" placeholder="example@gmail.com" />
+                    <label>Email</label><input type="email" id="email" />
                 </div>
                 <div class="form-group">
-                    <label>Phone Number:</label>
-                    <input type="text" id="phone" placeholder="Mobile number" />
+                    <label>Phone Number</label
+                    ><input type="text" id="phone" />
                 </div>
                 <div class="form-group hide">
-                    <label>WhatsApp Number:</label>
-                    <input type="text" id="whatsapp" placeholder="WhatsApp number" />
+                    <label>WhatsApp Number</label
+                    ><input type="number" id="whatsapp" />
                 </div>
                 <div class="form-group">
-                    <label>District:</label>
-                    <input type="text" id="district" placeholder="District name" />
-                </div>
-                <div class="form-group hide">
-                    <label>Address:</label>
-                    <input type="text" id="address" placeholder="Address" />
+                    <label>District</label><input type="text" id="district" />
                 </div>
                 <div class="form-group">
-                    <label>College Name:</label>
-                    <input type="text" id="college" placeholder="College name" />
+                    <label>College Name</label
+                    ><input type="text" id="college" />
                 </div>
                 <div class="form-group">
-                    <label>Facebook Profile Link:</label>
-                    <input type="text" id="facebook" placeholder="https://facebook.com/..." />
+                    <label>Codeforces Username</label
+                    ><input type="text" id="codeforces" />
                 </div>
                 <div class="form-group">
-                    <label>Codeforces Handle:</label>
-                    <input type="text" id="codeforces" placeholder="Codeforces Username" />
+                    <label>LinkedIn Profile Link</label
+                    ><input type="text" id="linkedin" />
+                </div>
+                <div class="form-group">
+                    <label>GitHub Account Link</label
+                    ><input type="text" id="github" />
+                </div>
+                <div class="form-group">
+                    <label>Facebook Account Link</label
+                    ><input type="text" id="facebook" />
                 </div>
 
-                <div class="buttons">
-                    <button type="button" class="btn-save" id="submitBtn" onclick="sendRequest('CREATE')">
-                        Update
-                    </button>
-                </div>
+                <button type="submit" id="submitBtn">Update Data</button>
             </form>
 
-            <div id="response"></div>
+            <div id="status"></div>
         </div>
 
         <script>
-            // REPLACE WITH YOUR GOOGLE APPS SCRIPT NEW DEPLOYMENT URL
-            const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwwiSgKWaJcChuz_pRVbaav0Vo1vyav2QkCfwkpnvwM_udZfDRRM8I27NHrVTOhdpkh/exec";
+            // --- GOOGLE APPS SCRIPT WEB APP URL ---
+            const SCRIPT_URL =
+                "https://script.google.com/macros/s/AKfycbz4Pr2UwxPFOZoAoxXMLgKhno_BFi81eT4mP9SAU1u11W0v7yQfBKSglgmpDm_jOz5S/exec";
 
-            async function getClientIp() {
-                try {
-                    const res = await fetch("https://api.ipify.org?format=json");
-                    const data = await res.json();
-                    return data.ip;
-                } catch (e) {
-                    return "127.0.0.1";
-                }
-            }
+            let deviceIp = "";
 
-            function fileToBase64(file) {
-                return new Promise((resolve, reject) => {
-                    if (!file) return resolve(null);
-                    const reader = new FileReader();
-                    reader.onload = () =>
-                        resolve({
-                            base64Data: reader.result.split(",")[1],
-                            mimeType: file.type,
-                            fileName: file.name,
-                        });
-                    reader.onerror = reject;
-                    reader.readAsDataURL(file);
-                });
-            }
+            // Fetch IP automatically on load
+            fetch("https://api.ipify.org?format=json")
+                .then((response) => response.json())
+                .then((data) => {
+                    deviceIp = data.ip;
+                })
+                .catch((err) => console.error("Could not fetch IP", err));
 
-            async function sendRequest(action) {
-                const btn = document.getElementById("submitBtn");
-                const responseDiv = document.getElementById("response");
-                const roll = document.getElementById("roll").value.trim();
+            document
+                .getElementById("dataForm")
+                .addEventListener("submit", async function (e) {
+                    e.preventDefault();
 
-                if (!roll) {
-                    responseDiv.innerText = "Error: Roll field is required.";
-                    return;
-                }
-
-                btn.disabled = true;
-                btn.innerText = "Processing...";
-                responseDiv.innerText = "Sending request...";
-
-                try {
-                    const clientIp = await getClientIp();
-                    const photoInput = document.getElementById("photo").files[0];
-                    const photoFile = await fileToBase64(photoInput);
+                    const btn = document.getElementById("submitBtn");
+                    const statusDiv = document.getElementById("status");
+                    btn.innerText = "Updating... Please wait";
+                    btn.disabled = true;
+                    statusDiv.innerText = "";
 
                     const payload = {
-                        action: action,
-                        clientIp: clientIp,
-                        data: {
-                            roll: roll,
-                            name: document.getElementById("name").value,
-                            email: document.getElementById("email").value,
-                            phone: document.getElementById("phone").value,
-                            whatsapp: document.getElementById("whatsapp").value,
-                            district: document.getElementById("district").value,
-                            address: document.getElementById("address").value,
-                            codeforces: document.getElementById("codeforces").value,
-                            college: document.getElementById("college").value,
-                            facebook: document.getElementById("facebook").value,
-                            photoFile: photoFile,
-                        },
+                        ip: deviceIp,
+                        roll: document.getElementById("roll").value,
+                        name: document.getElementById("name").value,
+                        email: document.getElementById("email").value,
+                        phone: document.getElementById("phone").value,
+                        whatsapp: document.getElementById("whatsapp").value,
+                        district: document.getElementById("district").value,
+                        college: document.getElementById("college").value,
+                        codeforces: document.getElementById("codeforces").value,
+                        linkedin: document.getElementById("linkedin").value,
+                        github: document.getElementById("github").value,
+                        facebook: document.getElementById("facebook").value,
+                        photoBase64: null,
+                        photoMimeType: null,
                     };
 
-                    const res = await fetch(SCRIPT_URL, {
-                        method: "POST",
-                        headers: { "Content-Type": "text/plain;charset=utf-8" },
-                        body: JSON.stringify(payload),
-                    });
+                    const fileInput = document.getElementById("photo");
 
-                    const rawText = await res.text();
-                    let json;
+                    // Helper function to read file and send data
+                    const sendData = () => {
+                        fetch(SCRIPT_URL, {
+                            method: "POST",
+                            // Using text/plain overrides strict CORS preflights in Apps Script
+                            headers: {
+                                "Content-Type": "text/plain;charset=utf-8",
+                            },
+                            body: JSON.stringify(payload),
+                        })
+                            .then((response) => response.json())
+                            .then((data) => {
+                                if (data.status === "success") {
+                                    statusDiv.style.color = "green";
+                                    statusDiv.innerText = "Data updated";
+                                    document.getElementById("dataForm").reset();
+                                } else {
+                                    throw new Error(data.message);
+                                }
+                            })
+                            .catch((error) => {
+                                statusDiv.style.color = "red";
+                                statusDiv.innerText = "Error";
+                                console.log(error.message);
+                            })
+                            .finally(() => {
+                                btn.innerText = "Submit Data";
+                                btn.disabled = false;
+                            });
+                    };
 
-                    try {
-                        json = JSON.parse(rawText);
-                    } catch (parseErr) {
-                        throw new Error("Invalid server response (HTML returned instead of JSON). Make sure you published a New Version.");
-                    }
-
-                    if (json.status === "success") {
-                        responseDiv.innerText = "Success: \n" + JSON.stringify(json.result, null, 2);
-
-                        // If user fetches data, prepopulate inputs
-                        if (action === "READ" && json.result) {
-                            const d = json.result;
-                            document.getElementById("name").value = d.name || "";
-                            document.getElementById("email").value = d.email || "";
-                            document.getElementById("phone").value = d.phone || "";
-                            document.getElementById("whatsapp").value = d.whatsapp || "";
-                            document.getElementById("district").value = d.district || "";
-                            document.getElementById("address").value = d.address || "";
-                            document.getElementById("college").value = d.college || "";
-                            document.getElementById("facebook").value = d.facebook || "";
-                            document.getElementById("codeforces").value = d.codeforces || "";
-
-                            // Display image securely parsed from Google Sheet Formula
-                            const imgPreview = document.getElementById("previewImg");
-                            if (d.photo && typeof d.photo === "string" && d.photo.startsWith("http")) {
-                                imgPreview.src = d.photo;
-                                imgPreview.style.display = "block";
-                            } else {
-                                imgPreview.style.display = "none";
-                            }
-                        }
+                    // If a file is attached, read it as Base64 first
+                    if (fileInput.files.length > 0) {
+                        const file = fileInput.files[0];
+                        const reader = new FileReader();
+                        reader.onload = function (event) {
+                            const result = event.target.result; // Data URL
+                            payload.photoMimeType = file.type;
+                            payload.photoBase64 = result.split(",")[1]; // Get only the base64 string
+                            sendData();
+                        };
+                        reader.readAsDataURL(file);
                     } else {
-                        responseDiv.innerText = "Backend Error: " + json.message;
+                        sendData(); // Send without photo
                     }
-                } catch (err) {
-                    responseDiv.innerText = "Request Failed: " + err.message;
-                    console.error(err);
-                } finally {
-                    btn.disabled = false;
-                    btn.innerText = "Update";
-                    document.getElementById("photo").value = ""; // Clear file picker
-                }
-            }
+                });
         </script>
     </body>
 </html>
