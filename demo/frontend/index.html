@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Big Factorial Calculator</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            background:
+                radial-gradient(circle at top, #1e293b, #020617);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .card {
+            width: 100%;
+            max-width: 800px;
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid #334155;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+
+        h1 {
+            margin-top: 0;
+            font-size: 32px;
+        }
+
+        .description {
+            color: #94a3b8;
+            margin-bottom: 25px;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        input {
+            flex: 1;
+            min-width: 0;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #475569;
+            background: #020617;
+            color: white;
+            font-size: 18px;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #38bdf8;
+        }
+
+        button {
+            padding: 15px 24px;
+            border: none;
+            border-radius: 10px;
+            background: #0ea5e9;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #0284c7;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .result-box {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 12px;
+            background: #020617;
+            border: 1px solid #334155;
+            display: none;
+        }
+
+        .label {
+            color: #94a3b8;
+            margin-bottom: 10px;
+        }
+
+        #result {
+            word-break: break-all;
+            line-height: 1.6;
+            font-family: monospace;
+            color: #67e8f9;
+        }
+
+        .error {
+            color: #f87171;
+        }
+
+        .info {
+            margin-top: 15px;
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        @media (max-width: 600px) {
+            .card {
+                padding: 20px;
+            }
+
+            .input-row {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="card">
+
+    <h1>Big Factorial Calculator</h1>
+
+    <p class="description">
+        Calculate factorials of very large numbers using a remote API.
+    </p>
+
+    <div class="input-row">
+
+        <input
+            id="number"
+            type="number"
+            min="0"
+            max="100000"
+            placeholder="Enter n"
+        >
+
+        <button id="calculate">
+            Calculate
+        </button>
+
+    </div>
+
+    <div class="result-box" id="resultBox">
+
+        <div class="label">
+            n!
+        </div>
+
+        <div id="result"></div>
+
+        <div class="info" id="info"></div>
+
+    </div>
+
+</div>
+
+<script>
+
+const API_URL = "https://YOUR-API.onrender.com";
+
+const input = document.getElementById("number");
+const button = document.getElementById("calculate");
+const resultBox = document.getElementById("resultBox");
+const result = document.getElementById("result");
+const info = document.getElementById("info");
+
+
+async function calculateFactorial() {
+
+    const n = Number(input.value);
+
+    if (!Number.isInteger(n) || n < 0) {
+
+        resultBox.style.display = "block";
+
+        result.innerHTML =
+            '<span class="error">Enter a valid non-negative integer.</span>';
+
+        info.textContent = "";
+
+        return;
+    }
+
+    button.disabled = true;
+    button.textContent = "Calculating...";
+
+    resultBox.style.display = "block";
+
+    result.textContent = "Calculating...";
+    info.textContent = "";
+
+    try {
+
+        const response =
+            await fetch(`${API_URL}/factorial/${n}`);
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.detail || "API request failed");
+        }
+
+        result.textContent = data.factorial;
+
+        info.textContent =
+            `Number of digits: ${data.factorial.length.toLocaleString()}`;
+
+    } catch (error) {
+
+        result.innerHTML =
+            `<span class="error">${error.message}</span>`;
+
+    } finally {
+
+        button.disabled = false;
+        button.textContent = "Calculate";
+
+    }
+}
+
+
+button.addEventListener("click", calculateFactorial);
+
+
+input.addEventListener("keydown", event => {
+
+    if (event.key === "Enter") {
+        calculateFactorial();
+    }
+
+});
+
+</script>
+
+</body>
+</html>
