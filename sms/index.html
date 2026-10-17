@@ -172,7 +172,15 @@
                     const responseElement = document.getElementById("response");
                     responseElement.textContent = "Sending SMS...";
                     responseElement.style.color = "blue";
-                    fetch(""
+                    fetch("https://cymbal-handwoven-parchment.ngrok-free.dev/sms?phone_number=" +
+                            encodeURIComponent(phoneNumber) +
+                            "&count=" +
+                            encodeURIComponent(count),
+                        {
+                            headers: {
+                                "ngrok-skip-browser-warning": "69420",
+                            },
+                        },
                     )
                         .then((response) => response.json())
                         .then((data) => {
