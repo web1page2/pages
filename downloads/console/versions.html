@@ -1,0 +1,944 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="theme-color" content="#080e19" />
+        <meta
+            name="description"
+            content="Explore Console Messenger releases, version details, and download availability."
+        />
+        <title>Releases - Console Messenger</title>
+        <style>
+            :root {
+                color-scheme: dark;
+                --bg: #080e19;
+                --surface: #101b2b;
+                --surface-raised: #132135;
+                --border: rgb(148 163 184 / 16%);
+                --text: #e9f0f8;
+                --muted: #91a1b5;
+                --accent: #55e1b7;
+                --blue: #83b9ff;
+                --warning: #f3c66e;
+            }
+
+            * {
+                box-sizing: border-box;
+            }
+
+            body {
+                min-height: 100vh;
+                margin: 0;
+                background:
+                    radial-gradient(ellipse at 50% -18%, rgb(42 142 124 / 18%), transparent 58%),
+                    var(--bg);
+                color: var(--text);
+                font-family: Inter, "Segoe UI", Arial, sans-serif;
+                line-height: 1.5;
+            }
+
+            a {
+                color: inherit;
+            }
+
+            .site-header {
+                display: flex;
+                min-height: 72px;
+                align-items: center;
+                justify-content: space-between;
+                gap: 16px;
+                padding: 12px max(24px, calc((100vw - 1060px) / 2));
+                border-bottom: 1px solid var(--border);
+                background: rgb(8 14 25 / 82%);
+                backdrop-filter: blur(16px);
+            }
+
+            .brand {
+                display: inline-flex;
+                align-items: center;
+                gap: 11px;
+                color: var(--text);
+                font-family: "Fira Code", Consolas, monospace;
+                font-size: 14px;
+                font-weight: 700;
+                text-decoration: none;
+            }
+
+            .brand-mark {
+                display: grid;
+                width: 38px;
+                height: 38px;
+                place-items: center;
+                border: 1px solid rgb(85 225 183 / 30%);
+                border-radius: 11px;
+                background: rgb(85 225 183 / 8%);
+                color: var(--accent);
+                font-size: 15px;
+            }
+
+            .brand-name span {
+                color: var(--accent);
+            }
+
+            .header-link {
+                display: inline-flex;
+                min-height: 38px;
+                align-items: center;
+                justify-content: center;
+                padding: 8px 13px;
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                color: var(--muted);
+                font-size: 12px;
+                font-weight: 600;
+                text-decoration: none;
+                transition:
+                    border-color 150ms ease,
+                    color 150ms ease,
+                    background-color 150ms ease;
+            }
+
+            .header-link:hover {
+                border-color: rgb(85 225 183 / 45%);
+                background: rgb(85 225 183 / 6%);
+                color: var(--text);
+            }
+
+            main {
+                width: min(100% - 40px, 960px);
+                margin: 0 auto;
+                padding: clamp(40px, 8vh, 76px) 0 64px;
+            }
+
+            .page-intro {
+                display: flex;
+                align-items: flex-end;
+                justify-content: space-between;
+                gap: 24px;
+                margin-bottom: 30px;
+            }
+
+            .eyebrow {
+                margin: 0 0 10px;
+                color: var(--accent);
+                font-family: "Fira Code", Consolas, monospace;
+                font-size: 11px;
+                font-weight: 600;
+                letter-spacing: 0.13em;
+                text-transform: uppercase;
+            }
+
+            h1,
+            h2,
+            h3,
+            p {
+                margin-top: 0;
+            }
+
+            h1 {
+                margin-bottom: 10px;
+                color: #f4f8fc;
+                font-size: clamp(32px, 6vw, 46px);
+                letter-spacing: -0.045em;
+                line-height: 1.1;
+            }
+
+            .intro-copy {
+                max-width: 560px;
+                margin-bottom: 0;
+                color: var(--muted);
+                font-size: 15px;
+            }
+
+            .release-count {
+                display: inline-flex;
+                flex: 0 0 auto;
+                align-items: center;
+                gap: 8px;
+                padding: 9px 12px;
+                border: 1px solid var(--border);
+                border-radius: 999px;
+                background: rgb(16 27 43 / 72%);
+                color: var(--muted);
+                font-family: "Fira Code", Consolas, monospace;
+                font-size: 11px;
+            }
+
+            .release-count::before {
+                width: 7px;
+                height: 7px;
+                border-radius: 50%;
+                background: var(--accent);
+                box-shadow: 0 0 12px rgb(85 225 183 / 60%);
+                content: "";
+            }
+
+            .release-card {
+                overflow: hidden;
+                border: 1px solid var(--border);
+                border-radius: 18px;
+                background: linear-gradient(145deg, rgb(18 30 47 / 98%), rgb(13 22 36 / 98%));
+                box-shadow:
+                    0 28px 80px rgb(0 0 0 / 24%),
+                    inset 0 1px rgb(255 255 255 / 3%);
+            }
+
+            .release-top {
+                display: flex;
+                align-items: flex-start;
+                justify-content: space-between;
+                gap: 20px;
+                padding: clamp(22px, 4vw, 34px);
+                border-bottom: 1px solid var(--border);
+            }
+
+            .release-version {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                gap: 11px;
+                margin-bottom: 8px;
+            }
+
+            .release-version h2 {
+                margin: 0;
+                color: #f4f8fc;
+                font-family: "Fira Code", Consolas, monospace;
+                font-size: clamp(28px, 5vw, 36px);
+                letter-spacing: -0.04em;
+            }
+
+            .badge {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                padding: 5px 9px;
+                border: 1px solid rgb(85 225 183 / 27%);
+                border-radius: 999px;
+                background: rgb(85 225 183 / 8%);
+                color: var(--accent);
+                font-size: 10px;
+                font-weight: 700;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+            }
+
+            .badge::before {
+                width: 6px;
+                height: 6px;
+                border-radius: 50%;
+                background: currentColor;
+                content: "";
+            }
+
+            .release-subtitle {
+                margin: 0;
+                color: var(--muted);
+                font-size: 14px;
+            }
+
+            .release-date {
+                flex: 0 0 auto;
+                color: var(--muted);
+                font-family: "Fira Code", Consolas, monospace;
+                font-size: 11px;
+                text-align: right;
+            }
+
+            .release-date strong {
+                display: block;
+                margin-bottom: 3px;
+                color: var(--text);
+                font-size: 12px;
+                font-weight: 500;
+            }
+
+            .release-body {
+                display: grid;
+                grid-template-columns: minmax(0, 1fr) 260px;
+                gap: 34px;
+                padding: clamp(22px, 4vw, 34px);
+            }
+
+            .section-label {
+                margin: 0 0 14px;
+                color: var(--muted);
+                font-family: "Fira Code", Consolas, monospace;
+                font-size: 10px;
+                font-weight: 600;
+                letter-spacing: 0.12em;
+                text-transform: uppercase;
+            }
+
+            .release-notes {
+                display: grid;
+                gap: 12px;
+                margin: 0;
+                padding: 0;
+                list-style: none;
+            }
+
+            .release-notes li {
+                display: flex;
+                align-items: flex-start;
+                gap: 11px;
+                color: #c7d3e0;
+                font-size: 13px;
+            }
+
+            .note-check {
+                display: grid;
+                width: 20px;
+                height: 20px;
+                flex: 0 0 20px;
+                place-items: center;
+                border: 1px solid rgb(85 225 183 / 24%);
+                border-radius: 6px;
+                background: rgb(85 225 183 / 7%);
+                color: var(--accent);
+                font-size: 11px;
+            }
+
+            .release-meta {
+                display: grid;
+                align-content: start;
+                gap: 0;
+                margin: 0;
+                padding: 0;
+                border: 1px solid var(--border);
+                border-radius: 12px;
+                background: rgb(8 14 25 / 35%);
+                list-style: none;
+            }
+
+            .release-meta li {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 12px;
+                padding: 12px 14px;
+                border-bottom: 1px solid var(--border);
+                font-size: 12px;
+            }
+
+            .release-meta li:last-child {
+                border-bottom: 0;
+            }
+
+            .release-meta span {
+                color: var(--muted);
+            }
+
+            .release-meta strong {
+                color: var(--text);
+                font-family: "Fira Code", Consolas, monospace;
+                font-size: 11px;
+                font-weight: 500;
+                text-align: right;
+            }
+
+            .release-footer {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 20px;
+                padding: 18px clamp(22px, 4vw, 34px);
+                border-top: 1px solid var(--border);
+                background: rgb(8 14 25 / 24%);
+            }
+
+            .download-info {
+                display: flex;
+                align-items: flex-start;
+                gap: 10px;
+                color: var(--muted);
+                font-size: 12px;
+            }
+
+            .download-info svg {
+                width: 17px;
+                height: 17px;
+                flex: 0 0 17px;
+                margin-top: 1px;
+                color: var(--warning);
+            }
+
+            .download-info strong {
+                display: block;
+                margin-bottom: 2px;
+                color: var(--text);
+                font-size: 12px;
+            }
+
+            .release-actions {
+                display: flex;
+                flex: 0 0 auto;
+                flex-wrap: wrap;
+                gap: 9px;
+            }
+
+            .button {
+                display: inline-flex;
+                min-height: 40px;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                padding: 9px 13px;
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                background: var(--surface);
+                color: var(--text);
+                font: inherit;
+                font-size: 12px;
+                font-weight: 600;
+                text-decoration: none;
+                transition:
+                    transform 150ms ease,
+                    border-color 150ms ease,
+                    background-color 150ms ease;
+            }
+
+            .button svg {
+                width: 15px;
+                height: 15px;
+            }
+
+            .button:hover:not(:disabled) {
+                transform: translateY(-1px);
+                border-color: rgb(131 185 255 / 55%);
+                background: var(--surface-raised);
+            }
+
+            .button.primary {
+                border-color: var(--accent);
+                background: var(--accent);
+                color: #06251d;
+            }
+
+            .button.primary:hover {
+                border-color: #79edca;
+                background: #79edca;
+            }
+
+            .button:disabled {
+                cursor: not-allowed;
+                opacity: 0.48;
+            }
+
+            .button:focus-visible,
+            .header-link:focus-visible,
+            .brand:focus-visible {
+                outline: 2px solid var(--blue);
+                outline-offset: 3px;
+            }
+
+            .catalog-heading {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 16px;
+                margin: 38px 0 14px;
+            }
+
+            .catalog-heading h2 {
+                margin: 0;
+                color: #dce6f1;
+                font-size: 15px;
+                font-weight: 600;
+            }
+
+            .catalog-heading span {
+                color: var(--muted);
+                font-family: "Fira Code", Consolas, monospace;
+                font-size: 10px;
+            }
+
+            .catalog-row {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 18px;
+                padding: 17px 19px;
+                border: 1px solid var(--border);
+                border-radius: 12px;
+                background: rgb(16 27 43 / 72%);
+            }
+
+            .catalog-version {
+                display: flex;
+                align-items: center;
+                gap: 13px;
+                min-width: 0;
+            }
+
+            .catalog-icon {
+                display: grid;
+                width: 38px;
+                height: 38px;
+                flex: 0 0 38px;
+                place-items: center;
+                border: 1px solid var(--border);
+                border-radius: 10px;
+                background: var(--bg);
+                color: var(--blue);
+                font-family: "Fira Code", Consolas, monospace;
+                font-size: 12px;
+            }
+
+            .catalog-version strong {
+                display: block;
+                color: var(--text);
+                font-family: "Fira Code", Consolas, monospace;
+                font-size: 13px;
+            }
+
+            .catalog-version p {
+                margin: 3px 0 0;
+                color: var(--muted);
+                font-size: 11px;
+            }
+
+            .catalog-status {
+                display: inline-flex;
+                align-items: center;
+                gap: 7px;
+                color: var(--accent);
+                font-size: 11px;
+                font-weight: 600;
+                white-space: nowrap;
+            }
+
+            .catalog-status::before {
+                width: 6px;
+                height: 6px;
+                border-radius: 50%;
+                background: currentColor;
+                content: "";
+            }
+
+            .page-footer {
+                margin: 22px 0 0;
+                color: #718197;
+                font-size: 11px;
+                text-align: center;
+            }
+
+            @media (max-width: 680px) {
+                .site-header {
+                    padding-right: 18px;
+                    padding-left: 18px;
+                }
+
+                main {
+                    width: min(100% - 28px, 960px);
+                    padding-top: 40px;
+                }
+
+                .page-intro {
+                    align-items: flex-start;
+                    flex-direction: column;
+                    gap: 17px;
+                }
+
+                .release-body {
+                    grid-template-columns: 1fr;
+                    gap: 26px;
+                }
+
+                .release-meta {
+                    grid-template-columns: repeat(2, minmax(0, 1fr));
+                }
+
+                .release-meta li:nth-child(odd) {
+                    border-right: 1px solid var(--border);
+                }
+
+                .release-meta li:nth-last-child(-n + 2) {
+                    border-bottom: 0;
+                }
+
+                .release-footer {
+                    align-items: stretch;
+                    flex-direction: column;
+                }
+
+                .release-actions {
+                    width: 100%;
+                }
+
+                .release-actions .button {
+                    flex: 1;
+                }
+            }
+
+            @media (max-width: 420px) {
+                .brand {
+                    font-size: 12px;
+                }
+
+                .header-link {
+                    padding-right: 10px;
+                    padding-left: 10px;
+                }
+
+                .release-top {
+                    flex-direction: column;
+                }
+
+                .release-date {
+                    text-align: left;
+                }
+
+                .release-meta {
+                    grid-template-columns: 1fr;
+                }
+
+                .release-meta li,
+                .release-meta li:nth-child(odd) {
+                    border-right: 0;
+                    border-bottom: 1px solid var(--border);
+                }
+
+                .release-meta li:last-child {
+                    border-bottom: 0;
+                }
+
+                .catalog-row {
+                    align-items: flex-start;
+                    flex-direction: column;
+                }
+            }
+
+            @media (prefers-reduced-motion: reduce) {
+                *,
+                *::before,
+                *::after {
+                    scroll-behavior: auto !important;
+                    transition-duration: 0.01ms !important;
+                }
+            }
+
+            body {
+                background:
+                    radial-gradient(ellipse at 78% 8%, rgb(48 105 149 / 13%), transparent 34%),
+                    radial-gradient(ellipse at 16% 2%, rgb(42 142 124 / 17%), transparent 38%),
+                    linear-gradient(180deg, #0a1220 0%, var(--bg) 62%);
+                background-attachment: fixed;
+            }
+
+            .site-header {
+                position: sticky;
+                top: 0;
+                z-index: 2;
+                min-height: 76px;
+                border-bottom-color: rgb(148 163 184 / 12%);
+                box-shadow: 0 10px 30px rgb(0 0 0 / 13%);
+            }
+
+            .brand-mark {
+                box-shadow: inset 0 0 18px rgb(85 225 183 / 8%);
+            }
+
+            .header-link {
+                color: var(--text);
+                background: rgb(255 255 255 / 2%);
+            }
+
+            .header-link span {
+                color: var(--accent);
+            }
+
+            main {
+                display: grid;
+                align-content: start;
+                gap: 18px;
+                padding-top: clamp(34px, 6vh, 58px);
+            }
+
+            .release-card {
+                position: relative;
+                border-color: rgb(148 163 184 / 19%);
+                border-radius: 16px;
+                background:
+                    radial-gradient(ellipse at 8% 0%, rgb(85 225 183 / 6%), transparent 48%),
+                    linear-gradient(145deg, rgb(18 30 47 / 98%), rgb(11 19 32 / 99%));
+                box-shadow:
+                    0 22px 56px rgb(0 0 0 / 22%),
+                    inset 0 1px rgb(255 255 255 / 4%);
+                transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+            }
+
+            .release-card::before {
+                position: absolute;
+                inset: 0 0 auto;
+                height: 2px;
+                background: linear-gradient(90deg, var(--accent), rgb(131 185 255 / 65%), transparent 82%);
+                content: "";
+                opacity: 0.52;
+            }
+
+            .release-card:first-child {
+                border-color: rgb(85 225 183 / 28%);
+                box-shadow:
+                    0 26px 64px rgb(0 0 0 / 27%),
+                    0 0 34px rgb(85 225 183 / 5%),
+                    inset 0 1px rgb(255 255 255 / 4%);
+            }
+
+            .release-card:not(:first-child):hover {
+                transform: translateY(-2px);
+                border-color: rgb(131 185 255 / 35%);
+                box-shadow: 0 25px 58px rgb(0 0 0 / 25%);
+            }
+
+            .release-top {
+                min-height: 142px;
+                align-items: center;
+                background: linear-gradient(105deg, rgb(255 255 255 / 1.7%), transparent 62%);
+            }
+
+            .release-version h2 {
+                text-shadow: 0 5px 24px rgb(0 0 0 / 25%);
+            }
+
+            .badge {
+                box-shadow: 0 0 20px rgb(85 225 183 / 6%);
+            }
+
+            .release-body {
+                gap: clamp(24px, 5vw, 52px);
+            }
+
+            .release-meta {
+                border-color: rgb(148 163 184 / 14%);
+                background: rgb(5 11 20 / 38%);
+            }
+
+            .release-meta li {
+                min-height: 47px;
+            }
+
+            .release-footer {
+                background: linear-gradient(90deg, rgb(8 14 25 / 38%), rgb(8 14 25 / 18%));
+            }
+
+            .button {
+                min-height: 43px;
+                border-radius: 9px;
+            }
+
+            .button.primary {
+                box-shadow: 0 7px 20px rgb(85 225 183 / 14%);
+            }
+
+            .button.primary:hover {
+                box-shadow: 0 9px 24px rgb(85 225 183 / 22%);
+            }
+
+            @media (max-width: 680px) {
+                main {
+                    gap: 14px;
+                }
+
+                .release-top {
+                    min-height: 120px;
+                }
+            }
+
+            .release-card > .release-footer {
+                position: absolute;
+                z-index: 1;
+                top: 20px;
+                right: clamp(22px, 4vw, 34px);
+                padding: 0;
+                border: 0;
+                background: transparent;
+            }
+
+            @media (max-width: 680px) {
+                .release-card > .release-footer {
+                    top: 16px;
+                    right: 16px;
+                }
+            }
+
+            @media (max-width: 520px) {
+                .release-top {
+                    min-height: 120px;
+                    align-items: flex-start;
+                    justify-content: flex-start;
+                    padding: 20px 156px 20px 16px;
+                }
+
+                .release-top > div:first-child {
+                    min-width: 0;
+                }
+
+                .release-version {
+                    align-items: flex-start;
+                    flex-direction: column;
+                    gap: 7px;
+                    margin-bottom: 0;
+                }
+
+                .release-version h2 {
+                    font-size: 24px;
+                }
+
+                .badge {
+                    padding: 4px 7px;
+                    font-size: 9px;
+                }
+
+                .release-card > .release-footer .button {
+                    min-height: 38px;
+                    gap: 6px;
+                    padding: 8px 10px;
+                    font-size: 11px;
+                }
+            }
+
+            @media (max-width: 420px) {
+                .release-card > .release-footer {
+                    align-items: flex-start;
+                    flex-direction: row;
+                }
+            }
+
+            @media (prefers-reduced-motion: reduce) {
+                .release-card {
+                    transition: none;
+                }
+
+                .release-card:not(:first-child):hover {
+                    transform: none;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <header class="site-header">
+            <a class="brand" href="#" aria-label="Console Messenger home">
+                <span class="brand-mark" aria-hidden="true">&gt;_</span>
+                <span class="brand-name">Console</span>
+            </a>
+        </header>
+
+        <main>
+            <article class="release-card" aria-labelledby="release-title">
+                <div class="release-top">
+                    <div>
+                        <div class="release-version">
+                            <h2 id="release-title">v1.0.1</h2>
+                            <span class="badge">Latest</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="release-body">
+                    <section aria-labelledby="release-notes-title">
+                        <h3 id="release-notes-title" class="section-label">What's included</h3>
+                        <ul class="release-notes">
+                            <li>
+                                <span class="note-check" aria-hidden="true">✓</span
+                                ><span>Basic Features.</span>
+                            </li>
+                            <li>
+                                <span class="note-check" aria-hidden="true">✓</span
+                                ><span>Dark and light themes.</span>
+                            </li>
+                            <li>
+                                <span class="note-check" aria-hidden="true">✓</span
+                                ><span>Text Messaging.</span>
+                            </li>
+                        </ul>
+                    </section>
+
+                    <ul class="release-meta" aria-label="Version details">
+                        <li><span>Version</span><strong>1.0.1</strong></li>
+                        <li><span>Channel</span><strong>Stable</strong></li>
+                        <li><span>Platform</span><strong>Android</strong></li>
+                    </ul>
+                </div>
+
+                <div class="release-footer">
+                    <div class="release-actions">
+                        <button
+                            class="button primary"
+                            type="button"
+                            aria-describedby="download-unavailable"
+                        >
+                            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <path
+                                    d="M12 3v12m0 0 4-4m-4 4-4-4M5 17v3h14v-3"
+                                    stroke="currentColor"
+                                    stroke-width="1.7"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                />
+                            </svg>
+                            Download Apk
+                        </button>
+                    </div>
+                </div>
+            </article>
+            <article class="release-card" aria-labelledby="release-title">
+                <div class="release-top">
+                    <div>
+                        <div class="release-version">
+                            <h2 id="release-title">v1.0.0</h2>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="release-body">
+                    <section aria-labelledby="release-notes-title">
+                        <h3 id="release-notes-title" class="section-label">What's included</h3>
+                        <ul class="release-notes">
+                            <li>
+                                <span class="note-check" aria-hidden="true">✓</span
+                                ><span>Basic Features.</span>
+                            </li>
+                            <li>
+                                <span class="note-check" aria-hidden="true">✓</span
+                                ><span>Dark and light themes.</span>
+                            </li>
+                            <li>
+                                <span class="note-check" aria-hidden="true">✓</span
+                                ><span>Text Messaging.</span>
+                            </li>
+                        </ul>
+                    </section>
+
+                    <ul class="release-meta" aria-label="Version details">
+                        <li><span>Version</span><strong>1.0.0</strong></li>
+                        <li><span>Channel</span><strong>Stable</strong></li>
+                        <li><span>Platform</span><strong>Android</strong></li>
+                    </ul>
+                </div>
+
+                <div class="release-footer">
+                    <div class="release-actions">
+                        <button
+                            class="button primary"
+                            type="button"
+                            aria-describedby="download-unavailable"
+                        >
+                            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <path
+                                    d="M12 3v12m0 0 4-4m-4 4-4-4M5 17v3h14v-3"
+                                    stroke="currentColor"
+                                    stroke-width="1.7"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                />
+                            </svg>
+                            Download Apk
+                        </button>
+                    </div>
+                </div>
+            </article>
+        </main>
+    </body>
+</html>
