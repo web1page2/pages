@@ -137,14 +137,22 @@
                 box-shadow:
                     0 22px 56px rgb(0 0 0 / 22%),
                     inset 0 1px rgb(255 255 255 / 4%);
-                transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+                transition:
+                    border-color 180ms ease,
+                    box-shadow 180ms ease,
+                    transform 180ms ease;
             }
 
             .release-card::before {
                 position: absolute;
                 inset: 0 0 auto;
                 height: 2px;
-                background: linear-gradient(90deg, var(--accent), rgb(131 185 255 / 65%), transparent 82%);
+                background: linear-gradient(
+                    90deg,
+                    var(--accent),
+                    rgb(131 185 255 / 65%),
+                    transparent 82%
+                );
                 content: "";
                 opacity: 0.52;
             }
@@ -511,7 +519,11 @@
 
         <main>
             <!-- Release v1.0.1 -->
-            <article class="release-card" aria-labelledby="release-v101-title">
+            <article
+                class="release-card"
+                aria-labelledby="release-v101-title"
+                style="display: none"
+            >
                 <div class="release-top">
                     <div>
                         <div class="release-version">
@@ -571,6 +583,7 @@
                     <div>
                         <div class="release-version">
                             <h2 id="release-v100-title">v1.0.0</h2>
+                            <span class="badge">Latest</span>
                         </div>
                     </div>
                 </div>
